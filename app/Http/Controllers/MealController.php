@@ -151,15 +151,13 @@ class MealController extends Controller
      * Implemented by: @brunolohl
      */
     public function getNutritionalInformation($id){
-        $url = 'http://api.nal.usda.gov/ndb/nutrients/?format=json&api_key=DEMO_KEY&nutrients=205&nutrients=204&nutrients=208&nutrients=269';
-        $array = $this->curlJsonUrlToArray($url);
+        $url = 'http://api.nal.usda.gov/ndb/reports/?ndbno=43205&type=f&format=json&api_key=BaKxZk2ziMCjeBGPJLlN8vw3VLmf2ypZbA6InZik';
+        $array = (array)$this->curlJsonUrlToArray($url);
+//        dd($array['report']);
 
-        $recipe_foods = $this->recipeFood->where('recipe_id', $id)->get();
-//        dd($recipe_foods);
+        $recipe_foods = $this->recipeFood->select('nbno', 'weight')->where('recipe_id', $id)->get();
 
-		$response = array(
-            "Implement this to retrive the nutrional information where recipe = $id",
-        );
+		$response = $recipe_foods;
         return response()->json($response);
     }
 
