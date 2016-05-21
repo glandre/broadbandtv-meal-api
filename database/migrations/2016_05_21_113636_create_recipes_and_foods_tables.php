@@ -1,0 +1,66 @@
+<?php
+
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+/**
+ * @author Geraldo B. Landre <geraldo.landre@gmail.com>
+ */
+class CreateRecipesAndFoodsTables extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('recipes', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->string('author')->nullable();
+            $table->string('difficulty')->nullable();
+            $table->string('comments')->nullable();
+            $table->timestamps();
+        });
+        
+        Schema::create('recipe_foods', function (Blueprint $table) {
+            $table->integer('nbno')->unsigned();
+            $table->primary('nbno');
+            $table->string('name');
+            $table->integer('weight');
+            $table->string('measure');
+            $table->integer('recipe_id')->unsigned();
+            $table->foreign('recipe_id')->references('id')->on('recipes')->onDelete('cascade');
+            $table->timestamps();
+        });
+        
+        Schema::create('recipe_steps', function (Blueprint $table) {
+            $table->integer('number')->unsigned();
+            $table->primary('number');
+            $table->string('description');
+            $table->integer('recipe_id')->unsigned();
+            $table->foreign('recipe_id')->references('id')->on('recipes')->onDelete('cascade');
+            $table->timestamps();
+        });
+        
+        Schema::create('configurations', function (Blueprint $table){
+            $table->string('key')->unique();
+            $table->primary('key');
+            $table->string('value')->unique();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop('recipe_steps');
+        Schema::drop('recipe_foods');
+        Schema::drop('recipes');
+        Schema::drop('configurations');
+    }
+}
