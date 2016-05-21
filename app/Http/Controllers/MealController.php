@@ -85,7 +85,7 @@ class MealController extends Controller
 				
 				$food_array[] = array("ndbno" => $food->ndbno,
 									  "name"=>$food->name
-									  );
+									  ),
 				
 			}
 			
