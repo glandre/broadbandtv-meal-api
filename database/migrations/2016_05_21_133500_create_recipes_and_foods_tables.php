@@ -45,8 +45,8 @@ class CreateRecipesAndFoodsTables extends Migration
         });
         
         Schema::create('configurations', function (Blueprint $table){
-            $table->string('key')->unique();
-            $table->primary('key');
+            $table->string('id')->unique();
+            $table->primary('id');
             $table->string('value')->unique();
         });
     }

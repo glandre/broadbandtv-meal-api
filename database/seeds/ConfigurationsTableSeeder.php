@@ -11,7 +11,7 @@ class ConfigurationsTableSeeder extends Seeder {
         DB::table('configurations')->delete();
  
         $configurations = array(
-            ['key' => 'USDA-API-KEY' , 'value' => 'BaKxZk2ziMCjeBGPJLlN8vw3VLmf2ypZbA6InZik']
+            ['id' => 'USDA-API-KEY' , 'value' => 'BaKxZk2ziMCjeBGPJLlN8vw3VLmf2ypZbA6InZik']
         );
  
         // Uncomment the below to run the seeder

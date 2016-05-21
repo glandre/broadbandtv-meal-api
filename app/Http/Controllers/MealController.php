@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Configuration;
 use App\Recipe;
 use App\RecipeFood;
 
@@ -76,21 +77,20 @@ class MealController extends Controller
      * Implemented by:
      */
     public function getFoodName($name){
-        $response = array(
-            $url = "http://api.nal.usda.gov/ndb/search/?format=json&q=".$food_name."&sort=n&max=100&offset=0&api_key=".$api_key."";
-			$array = $this->curlJsonUrlToArray($url);
-			$food_array = array();
-		
-			foreach($resArr["list"]->item as $food){
-				
-				$food_array[] = array("ndbno" => $food->ndbno,
-									  "name"=>$food->name
-									  ),
-				
-			}
-			
-			return $food_return;
-        );
+        
+        $api_key = Configuration::find("USDA-API-KEY")->value;
+        
+        $url = "http://api.nal.usda.gov/ndb/search/?format=json&q=".$name."&sort=n&max=100&offset=0&api_key=".$api_key."";
+        $array = $this->curlJsonUrlToArray($url);
+        $response = array();
+
+        foreach($array["list"]->item as $food){
+
+            $response[] = array("ndbno" => $food->ndbno,
+                                "name"=>$food->name
+                                );
+
+        }
         return response()->json($response);
     }
 
