@@ -37,7 +37,7 @@ class MealController extends Controller
      * Function: Retrieving a saved recipe
      * Address: /api/meal/recipe/1234
      * Method: GET
-     * Implemented by:
+     * Implemented by: @glandre
      */
     public function getRecipe($id){
         $response = Recipe::find($id);
