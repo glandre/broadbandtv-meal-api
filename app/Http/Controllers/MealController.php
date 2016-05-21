@@ -3,14 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Recipe;
+use App\RecipeFood;
 
 class MealController extends Controller
 {
     private $request;
+    private $recipe;
+    private $recipeFood;
 
-
-    public function __construct(Request $request){
-        $this->request = $request; //Dependency Injection
+    public function __construct(Request $request, Recipe $recipe, RecipeFood $recipeFood){
+        //Dependecy Injection
+        $this->request = $request;
+        $this->recipe = $recipe;
+        $this->recipeFood = $recipeFood;
     }
 
     /*
