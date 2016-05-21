@@ -29,8 +29,7 @@ class CreateRecipesAndFoodsTables extends Migration
             $table->integer('nbno')->unsigned();
             $table->primary('nbno');
             $table->string('name');
-            $table->integer('weight');
-            $table->string('measure');
+            $table->integer('qty');
             $table->integer('recipe_id')->unsigned();
             $table->foreign('recipe_id')->references('id')->on('recipes')->onDelete('cascade');
             $table->timestamps();
@@ -46,8 +45,8 @@ class CreateRecipesAndFoodsTables extends Migration
         });
         
         Schema::create('configurations', function (Blueprint $table){
-            $table->string('key')->unique();
-            $table->primary('key');
+            $table->string('id')->unique();
+            $table->primary('id');
             $table->string('value')->unique();
         });
     }

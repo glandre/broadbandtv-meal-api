@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Configuration;
 use App\Recipe;
 use App\RecipeFood;
 
@@ -39,9 +40,7 @@ class MealController extends Controller
      * Implemented by:
      */
     public function getRecipe($id){
-        $response = array(
-            "Implement this to retrive a saved recipe where recipe id = $id",
-        );
+        $response = Recipe::find($id);
         return response()->json($response);
     }
 
@@ -66,7 +65,7 @@ class MealController extends Controller
      */
     public function getFoodNdbno($ndbno){
         $response = array(
-            "Implement this to retrive an specific food by NDBNO = $ndbno",
+            
         );
         return response()->json($response);
     }
@@ -78,13 +77,24 @@ class MealController extends Controller
      * Implemented by:
      */
     public function getFoodName($name){
-        $response = array(
-            "Implement this to retrive a list of foods searched by NAME = $name",
-        );
+        
+        $api_key = Configuration::find("USDA-API-KEY")->value;
+        
+        $url = "http://api.nal.usda.gov/ndb/search/?format=json&q=".$name."&sort=n&max=100&offset=0&api_key=".$api_key."";
+        $array = $this->curlJsonUrlToArray($url);
+        $response = array();
+
+        foreach($array["list"]->item as $food){
+
+            $response[] = array("ndbno" => $food->ndbno,
+                                "name"=>$food->name
+                                );
+
+        }
         return response()->json($response);
     }
 
-    /*
+        /*
      * Function: Retrieving the nutritional information of a food or a list of foods
      * Address: /api/meal/nutritional-information
      * Method: POST
@@ -105,41 +115,51 @@ class MealController extends Controller
     public function postNutritionalInformation(){
 		$foodlist = $this->request->all();
 		$response = array();
+		
         foreach ($foodlist['recipe']['foods'] as $food) {
-			$curl = curl_init();
-			curl_setopt_array($curl, array(
-			CURLOPT_URL => "http://api.nal.usda.gov/ndb/reports/?ndbno=".$food['ndbno']."&type=f&format=json&api_key=DEMO_KEY",
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_ENCODING => "",
-			CURLOPT_MAXREDIRS => 10,
-			CURLOPT_TIMEOUT => 30,
-			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-			CURLOPT_CUSTOMREQUEST => "GET",
-			CURLOPT_HTTPHEADER => array(
-				"cache-control: no-cache",
-				"postman-token: 162114bd-260d-cf0c-bb40-ea02703dcbad"
-			),
-			));
-			
-			$resp = curl_exec($curl);
-			$err = curl_error($curl);
-			
-			curl_close($curl);
-			
+								
+			$url = "http://api.nal.usda.gov/ndb/reports/?ndbno=".$food['ndbno']."&type=f&format=json&api_key=BaKxZk2ziMCjeBGPJLlN8vw3VLmf2ypZbA6InZik"; 
+			$ch = curl_init(); 
+			curl_setopt($ch, CURLOPT_URL, $url); 
+			curl_setopt($ch, CURLOPT_HEADER, false);  // don't return headers
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			$res = curl_exec($ch); 
+			$err = curl_error($ch);
+            curl_close($ch);			
+				
+			$nut = array();
+			$resp = array();
+			$resp = $res;
+			$resp = json_decode($resp);
+
 			if ($err) {
-				$response[] = ['errror', $err];
+				$response[] = ['error', $err];
 			} else {
 				
-				$response[] = ['response' => $resp];
-			
+//				$response[] = ['response' => $resp];
+				$nut = array();					
+                foreach ($resp->report->food->nutrients as $nutrient) {
+			        
+					foreach($nutrient->measures as $measure) { 
+						if ($measure->label = $food['measure']) { 
+							$nut[] = [   'nutrient_id' => $nutrient->nutrient_id
+								   , 'nutrient_group'  => $nutrient->group
+								   , 'nutrient_name' => $nutrient->name
+								   , 'measure_value' => $measure->value
+								   , 'measure_label' => $measure->label
+									  ]; 
+						}
+					}
+                }							
 			}
-		
-		
+				
 			$response[] = [   'food_ndbno' => $food['ndbno']
 							, 'food_qty'  =>   $food['qty']
 							, 'food_measure' => $food['measure']
+							, 'nutrients' => $nut
+							, 'response' => $resp
 						]; 
-			}
+		}
         $response[] = ['msg', "Implement this to retrive the nutrional information of a food or a list of foods"];
         return response()->json($response);
     }
