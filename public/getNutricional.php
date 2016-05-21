@@ -39,9 +39,10 @@
 	function get_food($food_name) {
 		
 		$api_key = "BaKxZk2ziMCjeBGPJLlN8vw3VLmf2ypZbA6InZik";
+		$food_id = "01009";
 		
 		//Call get_web_page to get food with same name
-		$response = get_web_page("http://api.nal.usda.gov/ndb/search/?format=json&q=".$food_name."&sort=n&max=100&offset=0&api_key=".$api_key."");
+		$response = get_web_page("http://api.nal.usda.gov/ndb/reports/?ndbno=".$food_id."&type=f&format=json&api_key=".BaKxZk2ziMCjeBGPJLlN8vw3VLmf2ypZbA6InZik."");
 		
 		$resArr = array();
 
@@ -57,10 +58,11 @@
 			
 		}
 		
-		$food_return = json_encode($food_array);
+		$food_return = json_encode($food_array));
 		
 		return $food_return;
 		
 	}
 
 	
+?>
