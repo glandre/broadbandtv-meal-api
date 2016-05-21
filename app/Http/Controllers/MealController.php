@@ -171,11 +171,12 @@ class MealController extends Controller
      * Implemented by: @brunolohl
      */
     public function getNutritionalInformation($id){
-        $url = 'http://api.nal.usda.gov/ndb/reports/?ndbno=43205&type=f&format=json&api_key=BaKxZk2ziMCjeBGPJLlN8vw3VLmf2ypZbA6InZik';
-        $array = (array)$this->curlJsonUrlToArray($url);
-//        dd($array['report']);
+//        $url = 'http://api.nal.usda.gov/ndb/reports/?ndbno=43205&type=f&format=json&api_key=BaKxZk2ziMCjeBGPJLlN8vw3VLmf2ypZbA6InZik';
+//        $array = $this->curlJsonUrlToArray($url);
+//        $array = $array['report'];
+//        dd($array->food->nutrients[0]->measures);
 
-        $recipe_foods = $this->recipeFood->select('nbno', 'weight')->where('recipe_id', $id)->get();
+        $recipe_foods = $this->recipeFood->select('nbno', 'qty', 'measure')->where('recipe_id', $id)->get();
 
 		$response = $recipe_foods;
         return response()->json($response);
@@ -193,5 +194,15 @@ class MealController extends Controller
         $result = curl_exec($ch);
         curl_close($ch);
         return (array)json_decode($result);
+    }
+
+    /*
+     * Function: Show content from POST Requests. Usefull for testing.
+     * Address: /api/meal/teste
+     * Implemented by: @brunolohl
+     */
+    public function postTeste(){
+        $response = $this->request->all();
+        return response()->json($response);
     }
 }
