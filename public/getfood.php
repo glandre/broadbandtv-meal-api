@@ -57,7 +57,7 @@
 			
 		}
 		
-		$food_return = json_encode($food_array));
+		$food_return = json_encode($food_array);
 		
 		return $food_return;
 		
