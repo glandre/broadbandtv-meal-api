@@ -1,6 +1,8 @@
-# BroadBandTV-meal-API
+# VanHackathon BroadBandTV-meal-API
 
 ## Back-end challenge: Meal Nutrition API
+
+Challenge date: from May 20th to May 22nd, 2016.
 
 Hiring for: Back-end developer
 Programming language: PHP
