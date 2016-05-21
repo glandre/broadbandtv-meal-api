@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 class MealController extends Controller
 {
-    private $request;
+    private $request;    
 
     public function __construct(Request $request){
         $this->request = $request; //Dependency Injection
@@ -81,12 +81,59 @@ class MealController extends Controller
      * Function: Retrieving the nutritional information of a food or a list of foods
      * Address: /api/meal/nutritional-information
      * Method: POST
-     * Implemented by:
+     * Implemented by: @rgbatistella
+{
+    "recipe": {
+        "name": "My new recipe",
+        "foods": [
+            {
+                "ndbno": "43205",
+                "qty": "4.87",
+                "measure": "tbsp"
+            }
+        ]
+    }
+}
      */
     public function postNutritionalInformation(){
-        $response = array(
-            "Implement this to retrive the nutrional information of a food or a list of foods",
-        );
+		$foodlist = $this->request->all();
+		$response = array();
+        foreach ($foodlist['recipe']['foods'] as $food) {
+			$curl = curl_init();
+			curl_setopt_array($curl, array(
+			CURLOPT_URL => "http://api.nal.usda.gov/ndb/reports/?ndbno=".$food['ndbno']."&type=f&format=json&api_key=DEMO_KEY",
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_ENCODING => "",
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 30,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => "GET",
+			CURLOPT_HTTPHEADER => array(
+				"cache-control: no-cache",
+				"postman-token: 162114bd-260d-cf0c-bb40-ea02703dcbad"
+			),
+			));
+			
+			$resp = curl_exec($curl);
+			$err = curl_error($curl);
+			
+			curl_close($curl);
+			
+			if ($err) {
+				$response[] = ['errror', $err];
+			} else {
+				
+				$response[] = ['response' => $resp];
+			
+			}
+		
+		
+			$response[] = [   'food_ndbno' => $food['ndbno']
+							, 'food_qty'  =>   $food['qty']
+							, 'food_measure' => $food['measure']
+						]; 
+			}
+        $response[] = ['msg', "Implement this to retrive the nutrional information of a food or a list of foods"];
         return response()->json($response);
     }
 
@@ -94,10 +141,12 @@ class MealController extends Controller
      * Function: Retrieving a recipe nutritional information
      * Address: /api/meal/nutritional-information/123
      * Method: GET
-     * Implemented by: @brunolohl
+     * Implemented by:
+	 
      */
     public function getNutritionalInformation($id){
-        $response = array(
+
+		$response = array(
             "Implement this to retrive the nutrional information where recipe = $id",
         );
         return response()->json($response);
