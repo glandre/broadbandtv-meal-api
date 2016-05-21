@@ -66,7 +66,7 @@ class MealController extends Controller
      */
     public function getFoodNdbno($ndbno){
         $response = array(
-            "Implement this to retrive an specific food by NDBNO = $ndbno",
+            
         );
         return response()->json($response);
     }
@@ -79,7 +79,19 @@ class MealController extends Controller
      */
     public function getFoodName($name){
         $response = array(
-            "Implement this to retrive a list of foods searched by NAME = $name",
+            $url = "http://api.nal.usda.gov/ndb/search/?format=json&q=".$food_name."&sort=n&max=100&offset=0&api_key=".$api_key."";
+			$array = $this->curlJsonUrlToArray($url);
+			$food_array = array();
+		
+			foreach($resArr["list"]->item as $food){
+				
+				$food_array[] = array("ndbno" => $food->ndbno,
+									  "name"=>$food->name
+									  );
+				
+			}
+			
+			return $food_return;
         );
         return response()->json($response);
     }
