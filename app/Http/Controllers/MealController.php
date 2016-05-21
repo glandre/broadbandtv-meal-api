@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 
 class MealController extends Controller
 {
-    private $request;    
+    private $request;
+
 
     public function __construct(Request $request){
         $this->request = $request; //Dependency Injection
@@ -141,14 +142,29 @@ class MealController extends Controller
      * Function: Retrieving a recipe nutritional information
      * Address: /api/meal/nutritional-information/123
      * Method: GET
-     * Implemented by:
-	 
+     * Implemented by: @brunolohl
      */
     public function getNutritionalInformation($id){
+        $url = "http://api.nal.usda.gov/ndb/list?format=JSON&lt=f&sort=n&api_key=DEMO_KEY";
+        $array = $this->curlJsonUrlToArray($url);
 
 		$response = array(
             "Implement this to retrive the nutrional information where recipe = $id",
         );
         return response()->json($response);
+    }
+
+    /*
+     * Function: Retriving Json content from a URL and convert the response to an array
+     * url: insert a valid url to get Json
+     * Implemented by: @brunolohl
+     */
+    private function curlJsonUrlToArray($url){
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return (array)json_decode($result);
     }
 }
