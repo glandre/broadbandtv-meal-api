@@ -105,7 +105,7 @@ class MealController extends Controller
         return response()->json($response);
     }
 
-        /*
+         /*
      * Function: Retrieving the nutritional information of a food or a list of foods
      * Address: /api/meal/nutritional-information
      * Method: POST
@@ -126,10 +126,13 @@ class MealController extends Controller
     public function postNutritionalInformation(){
 		$foodlist = $this->request->all();
 		$response = array();
-		
+		// start a dummy value on summary to facilitate search
+		$summary = [['nutrient_id'=>'-1']];
+		// loop through food list from recipe
         foreach ($foodlist['recipe']['foods'] as $food) {
-								
-			$url = "http://api.nal.usda.gov/ndb/reports/?ndbno=".$food['ndbno']."&type=f&format=json&api_key=BaKxZk2ziMCjeBGPJLlN8vw3VLmf2ypZbA6InZik"; 
+			// calls usda api
+			$api_key = Configuration::find("USDA-API-KEY")->value;
+			$url = "http://api.nal.usda.gov/ndb/reports/?ndbno=".$food['ndbno']."&type=f&format=json&api_key=".$api_key; 
 			$ch = curl_init(); 
 			curl_setopt($ch, CURLOPT_URL, $url); 
 			curl_setopt($ch, CURLOPT_HEADER, false);  // don't return headers
@@ -140,38 +143,63 @@ class MealController extends Controller
 				
 			$nut = array();
 			$resp = array();
-			$resp = $res;
-			$resp = json_decode($resp);
+			$resp = json_decode($res,true);
 
 			if ($err) {
 				$response[] = ['error', $err];
-			} else {
-				
-//				$response[] = ['response' => $resp];
+			} else {			
 				$nut = array();					
-                foreach ($resp->report->food->nutrients as $nutrient) {
-			        
-					foreach($nutrient->measures as $measure) { 
-						if ($measure->label = $food['measure']) { 
-							$nut[] = [   'nutrient_id' => $nutrient->nutrient_id
-								   , 'nutrient_group'  => $nutrient->group
-								   , 'nutrient_name' => $nutrient->name
-								   , 'measure_value' => $measure->value
-								   , 'measure_label' => $measure->label
-									  ]; 
+				// loop through nutrients
+                foreach ($resp['report']['food']['nutrients'] as $nutrient) {
+					// loop through nutrient´s units of measure
+					foreach($nutrient['measures'] as $measure) { 
+						// if label matches unit of measure from recipe
+						if ($measure['label'] == $food['measure']) { 
+                            // store nutrient information for this food             						
+							$nut[] = [  'nutrient_id'    => $nutrient['nutrient_id']
+								      , 'nutrient_group' => $nutrient['group']
+								      , 'nutrient_name'  => $nutrient['name']
+								      , 'nutrient_unit'  => $nutrient['unit']
+								      , 'measure_value'  => $measure['value'] 
+								      , 'measure_label'  => $measure['label']
+									 ];
+														
+							// search for nutrient_id
+							$key = (int)array_search($nutrient['nutrient_id'], array_column($summary, 'nutrient_id'), true);							
+							// if not found on sumary
+							if ($key == 0) {
+								// add to summary
+								$summary[] = ['nutrient_id' => $nutrient['nutrient_id']
+								   , 'group'  => $nutrient['group']
+								   , 'name' => $nutrient['name']
+								   , 'unit' => $nutrient['unit']
+								   , 'value' => $measure['value'] * $food['qty']
+									  ];
+							}
+							else {							
+							    // sum qty							
+								$summary[$key]['value'] += $measure['value'];
+							}
 						}
-					}
+					}		
                 }							
 			}
-				
+			
+			// adds food information to the summary
 			$response[] = [   'food_ndbno' => $food['ndbno']
 							, 'food_qty'  =>   $food['qty']
 							, 'food_measure' => $food['measure']
-							, 'nutrients' => $nut
-							, 'response' => $resp
+							, 'food_nutrients' => $nut					
 						]; 
 		}
-        $response[] = ['msg', "Implement this to retrive the nutrional information of a food or a list of foods"];
+		
+		// removes dummy first position	
+		array_shift($summary);
+
+		// response is an array of foods along with their nutritrients and nutrients summary
+		$response = array('foods' => $response, 'sumary' => $summary);
+			
+		// returns response
         return response()->json($response);
     }
 
