@@ -70,7 +70,7 @@ class MealController extends Controller
         $array = $this->curlJsonUrlToArray($url);
         $response = array();
 
-        foreach($resArr["report"]->food->nutrients as $nutrient){
+        foreach($array["report"]->food->nutrients as $nutrient){
 
             $response[] = array("name"=>$nutrient->name,
 									  "unit"=>$nutrient->unit,
