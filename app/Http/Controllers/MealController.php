@@ -37,7 +37,7 @@ class MealController extends Controller
      * Function: Retrieving a saved recipe
      * Address: /api/meal/recipe/1234
      * Method: GET
-     * Implemented by:
+     * Implemented by: @glandre
      */
     public function getRecipe($id){
         $response = Recipe::find($id);
@@ -64,9 +64,20 @@ class MealController extends Controller
      * Implemented by:
      */
     public function getFoodNdbno($ndbno){
-        $response = array(
-            
-        );
+        $api_key = Configuration::find("USDA-API-KEY")->value;
+        
+        $url = "http://api.nal.usda.gov/ndb/reports/?ndbno=".$ndbno."&type=f&format=json&api_key=".$api_key."";
+        $array = $this->curlJsonUrlToArray($url);
+        $response = array();
+
+        foreach($resArr["report"]->food->nutrients as $nutrient){
+
+            $response[] = array("name"=>$nutrient->name,
+									  "unit"=>$nutrient->unit,
+									  "value"=>$nutrient->value,
+									  "measure"=>$nutrient->measures);
+
+        }
         return response()->json($response);
     }
 

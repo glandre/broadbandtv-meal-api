@@ -26,9 +26,10 @@ class CreateRecipesAndFoodsTables extends Migration
         });
         
         Schema::create('recipe_foods', function (Blueprint $table) {
-            $table->integer('nbno')->unsigned();
-            $table->primary('nbno');
+            $table->increments('id');
+            $table->string('ndbno', 10);
             $table->string('name');
+            $table->string('measure');
             $table->integer('qty');
             $table->integer('recipe_id')->unsigned();
             $table->foreign('recipe_id')->references('id')->on('recipes')->onDelete('cascade');
