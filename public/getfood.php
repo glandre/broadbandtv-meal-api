@@ -39,7 +39,6 @@
 	function get_food($food_name) {
 		
 		$api_key = "BaKxZk2ziMCjeBGPJLlN8vw3VLmf2ypZbA6InZik";
-		$food_name = "lobster";
 		
 		//Call get_web_page to get food with same name
 		$response = get_web_page("http://api.nal.usda.gov/ndb/search/?format=json&q=".$food_name."&sort=n&max=100&offset=0&api_key=".$api_key."");
