@@ -39,9 +39,7 @@ class MealController extends Controller
      * Implemented by:
      */
     public function getRecipe($id){
-        $response = array(
-            "Implement this to retrive a saved recipe where recipe id = $id",
-        );
+        $response = Recipe::find($id);
         return response()->json($response);
     }
 
