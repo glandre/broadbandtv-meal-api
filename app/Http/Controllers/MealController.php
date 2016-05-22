@@ -392,20 +392,24 @@ class MealController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function postNutritionalInformation() {
+		$status = 200;
+
         switch ($this->contentType()) {
             case "application/json":
                 $array = $this->request->all();
                 $json = json_encode($array);
 
-                if (count($array) == 0) {
-                    app()->abort(501, 'Only JSON is supported');
+                if (count($array) == 0) {                    
+					$status = 501;
+                    $response = array('error' => 501, 'message' => 'Only JSON is supported');
                     break;
                 }
 
                 $response = $this->calculate($json);
                 break;
             default:
-                app()->abort(501, 'Only JSON is supported');
+                $status = 501;
+                $response = array('error' => 501, 'message' => 'Only JSON is supported');
         }
 
         return response()->json($response);
