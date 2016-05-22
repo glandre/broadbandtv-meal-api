@@ -262,11 +262,41 @@ class MealController extends Controller
 		
      */
     public function postNutritionalInformation(){
-		$foodlist = $this->request->all();
-		$response = array();
-		// start a dummy value on summary to facilitate search
-		$summary = [['nutrient_id'=>'-1']];
-		// loop through food list from recipe
+		$array = $this->request->all();
+        $json = json_encode($array);
+        $response = $this->calculate($json);
+        return response()->json($response);
+    }
+
+    /*
+     * Function: Retrieving a recipe nutritional information
+     * Address: /api/meal/nutritional-information/123
+     * Method: GET
+     * Implemented by: @brunolohl
+     */
+    public function getNutritionalInformation($id){
+        $recipe_foods = $this->recipeFood->select('ndbno', 'qty', 'measure')->where('recipe_id', $id)->get();
+        $array = array(
+            'recipe' => array(
+                'foods' => $recipe_foods,
+            ),
+        );
+        $json = json_encode($array);
+        $response = $this->calculate($json);
+        return response()->json($response);
+    }
+
+    /*
+     * Function: Calculates the nutritional information of a list of foods
+     * Implemented by: @rgbatistella
+	 * message format : json
+     */
+    private function calculate($foodlist){
+        $foodlist = json_decode($foodlist,true);
+        $response = array();
+        // start a dummy value on summary to facilitate search
+        $summary = [['nutrient_id'=>'-1']];
+        // loop through food list from recipe
         foreach ($foodlist['recipe']['foods'] as $food) {
 			
 			$nut = array();
@@ -345,29 +375,11 @@ class MealController extends Controller
 		// removes dummy first position	
 		array_shift($summary);
 
-		// response is an array of foods along with their nutritrients and nutrients summary
-		$response = array('foods' => $response, 'sumary' => $summary);
-			
-		// returns response
-        return response()->json($response);
-    }
+        // response is an array of foods along with their nutritrients and nutrients summary
+        $response = array('foods' => $response, 'sumary' => $summary);
 
-    /*
-     * Function: Retrieving a recipe nutritional information
-     * Address: /api/meal/nutritional-information/123
-     * Method: GET
-     * Implemented by: @brunolohl
-     */
-    public function getNutritionalInformation($id){
-//        $url = 'http://api.nal.usda.gov/ndb/reports/?ndbno=43205&type=f&format=json&api_key=BaKxZk2ziMCjeBGPJLlN8vw3VLmf2ypZbA6InZik';
-//        $array = $this->curlJsonUrlToArray($url);
-//        $array = $array['report'];
-//        dd($array->food->nutrients[0]->measures);
-
-        $recipe_foods = $this->recipeFood->select('ndbno', 'qty', 'measure')->where('recipe_id', $id)->get();
-
-		$response = $recipe_foods;
-        return response()->json($response);
+        // returns response
+        return $response;
     }
 
     /*
