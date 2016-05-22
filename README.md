@@ -38,7 +38,12 @@ Download the zip file and unzip it in your local machine.
 After unziping the content file, open command prompt</b>
 
 Access the API's source code directory
-
 ```
 cd broadbandtv-meal-api
 ```
+
+Run composer to install and update all necessary depencencies
+```
+composer update
+```
+
