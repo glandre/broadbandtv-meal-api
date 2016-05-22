@@ -251,7 +251,7 @@ Depending on the PHP version, it could happen during POST requests.
 
 > Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set ‘always_populate_raw_post_data’ to ‘-1’ in php.ini and use the php://input stream instead. in Unknown on line 0
 
-- How to solve:
+- How to solve it:
 Configure your php.ini file as follows:
 ```
 ; Always populate the $HTTP_RAW_POST_DATA variable. PHP's default behavior is
