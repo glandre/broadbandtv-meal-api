@@ -12,9 +12,10 @@ class ConfigurationsTableSeeder extends Seeder {
  
         $configurations = array(
             ['id' => 'USDA-API-KEY' , 'value' => 'BaKxZk2ziMCjeBGPJLlN8vw3VLmf2ypZbA6InZik'],
-			['id' => 'USDA_REPORT_URL' , 'value' => 'http://api.nal.usda.gov/ndb/reports/'],
-			['id' => 'PREFERRED_FORMAT' , 'value' => 'json'],
-			['id' => 'USDA_SEARCH_URL' , 'value' => 'http://api.nal.usda.gov/ndb/search/'],
+            ['id' => 'USDA_REPORT_URL' , 'value' => 'http://api.nal.usda.gov/ndb/reports/'],
+            ['id' => 'PREFERRED_FORMAT' , 'value' => 'json'],
+            ['id' => 'USDA_SEARCH_URL' , 'value' => 'http://api.nal.usda.gov/ndb/search/'],
+            ['id' => 'APPLICATION_KEY' , 'value' => str_random(60)],
         );
  
         // Uncomment the below to run the seeder
