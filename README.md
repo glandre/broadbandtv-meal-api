@@ -30,8 +30,37 @@ Any related feature you think would be cool or useful.
 ##Requistes
 - PHP5.6 or higher
 - Composer
+- SQL Database (MySQL is preferred, but you can use any PDO possibility)
+
+Important: For the above tutorial, we are going to use MySQL Database
 
 ##How to Install
 Download the zip file and unzip it in your local machine.
 
 ###Windows
+After unziping the content file, open command prompt</b>
+
+Access the API's source code directory
+```
+cd broadbandtv-meal-api
+```
+
+Run composer to install and update all necessary depencencies (it may take some time, so be patient..)
+```
+composer update
+```
+
+Now, that you have everything you need to run this API, your mut configure it.
+```
+copy .env.example .env
+```
+
+You also have to generate a valid app key. The following command will do this to you:
+```
+php artisan key:generate
+```
+
+Using any text editor of your preference, edit file **/broadbandtv-meal-api/.env** according to your environment.
+
+
+
