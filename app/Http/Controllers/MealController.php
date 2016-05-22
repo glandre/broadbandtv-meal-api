@@ -21,7 +21,6 @@ class MealController extends Controller
         $this->recipe = $recipe;
         $this->recipeFood = $recipeFood;
         $this->configuration = $configuration;
-        \App::abort();
     }
 
     /*
