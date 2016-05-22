@@ -30,7 +30,7 @@ Any related feature you think would be cool or useful.
 ##Requirements
 - PHP5.6 or higher
 - Composer
-- SQL Database (MySQL is preferred, but you can use any PDO possibility)
+- SQL Database (MySQL is preferred, but you can use any PDO's possibility)
 
 Important: For the above tutorial, we are going to use MySQL Database
 
