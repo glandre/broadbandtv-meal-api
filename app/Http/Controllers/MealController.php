@@ -647,14 +647,14 @@ class MealController extends Controller {
                 $response[] = ['error', 'qty invalid'];
                         } else {
                 // calls usda api
-                $usda_url = $this->configuration->find('USDA_REPORT_URL');
-                if ($usda_url == null) {
+//                $usda_url = $this->configuration->find('USDA_REPORT_URL');
+//                if ($usda_url == null) {
                     $usda_url = 'http://api.nal.usda.gov/ndb/reports/';
-                                }
-                $format = $this->configuration->find('PREFERRED_FORMAT');
-                if ($format == null) {
+  //                              }
+//                $format = $this->configuration->find('PREFERRED_FORMAT');
+ //               if ($format == null) {
                     $format = 'json';
-                                }
+   //                             }
                 $api_key = $this->configuration->find("USDA-API-KEY")->value;
                 $url = $usda_url . "?ndbno=" . $food['ndbno'] . "&type=f&format=" . $format . "&api_key=" . $api_key;
                 $ch = curl_init();
