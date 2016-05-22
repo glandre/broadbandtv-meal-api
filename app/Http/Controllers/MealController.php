@@ -12,44 +12,25 @@ class MealController extends Controller
     private $request;
     private $recipe;
     private $recipeFood;
+    private $configuration;
 
-    public function __construct(Request $request, Recipe $recipe, RecipeFood $recipeFood){
+    public function __construct(Request $request, Recipe $recipe, RecipeFood $recipeFood, Configuration $configuration){
         //Dependecy Injection
         $this->request = $request;
         $this->recipe = $recipe;
         $this->recipeFood = $recipeFood;
+        $this->configuration = $configuration;
     }
 
     /*
      * Function: Saving a new recipe
      * Address: /api/meal/recipe
      * Method: POST
-     * Implemented by:
+     * Implemented by: @glandre
      */
     public function postRecipe(){
         $request = $this->request->all();
-        
-        list($newRecipe, $foods, $invalid) = $this->bindRecipeData($request);
-        
-        $message = "Could not save recipe";
-        if(count($foods)) {
-            if ($newRecipe->save()) {
-                $newRecipe->recipeFoods()->saveMany($foods);
-                $message = (count($invalid) > 0) ? "Some data are not valid" : "Saved successfully";
-            }
-        }
-        else {
-            $message = "Invalid data";
-            // bad request
-        }
-
-        $response = array(
-            'message' => $message,
-            'saved_recipe' => $newRecipe,
-            'saved_foods' => $foods,
-            'invalid_foods' => $invalid
-        );
-        
+        $response = $this->updateRecipe($request);
         return response()->json($response);
     }
 
@@ -60,7 +41,7 @@ class MealController extends Controller
      * Implemented by: @glandre
      */
     public function getRecipe($id){
-        $response = Recipe::find($id);
+        $response = $this->recipe->find($id);
         return response()->json($response);
     }
 
@@ -68,13 +49,59 @@ class MealController extends Controller
      * Function: Editing a saved recipe
      * Address: /api/meal/recipe/1234
      * Method: PUT
-     * Implemented by:
+     * Implemented by: @glandre
      */
     public function putRecipe($id){
-        $response = array(
-            "Implement this to edit a saved recipe where recipe id = $id",
-        );
+        $request = $this->request->all();
+        $response = $this->updateRecipe($request, $id);
         return response()->json($response);
+    }
+    
+    /*
+     * Function: Deleting a saved recipe
+     * Address: /api/meal/recipe/1234
+     * Method: DELETE
+     * Implemented by: @glandre
+     */
+    public function deleteRecipe($id) {
+        $recipe = $this->recipe->findOrFail($id);
+        
+        $response = "Could not delete recipe";
+        if($recipe->delete()) {
+            $response = "Recipe successfully deleted";
+        }
+        
+        return response()->json($response);
+    }
+    
+    /*
+     * Base method for PUT and POST methods
+     * Implemented by: @glandre
+     */
+    private function updateRecipe($request, $id = 0) {
+        
+        list($editingRecipe, $foods, $invalid) = $this->bindRecipeData($request, $id);
+        
+        $message = "Could not save recipe";
+        if(count($foods)) {
+            if ($editingRecipe->save()) {
+                
+                $editingRecipe->recipeFoods()->saveMany($foods);
+                $message = (count($invalid) > 0) ? "Some data are not valid" : "Saved successfully";
+            }
+        }
+        else {
+            $message = "Invalid data";
+            // bad request
+        }
+
+        return array(
+            'message' => $message,
+            'saved_recipe' => $editingRecipe,
+            'saved_foods' => $foods,
+            'invalid_foods' => $invalid
+        );
+        
     }
 
     /*
@@ -84,7 +111,7 @@ class MealController extends Controller
      * Implemented by:
      */
     public function getFoodNdbno($ndbno){
-        $api_key = Configuration::find("USDA-API-KEY")->value;
+        $api_key = $this->configuration->find("USDA-API-KEY")->value;
         
         $url = "http://api.nal.usda.gov/ndb/reports/?ndbno=".$ndbno."&type=f&format=json&api_key=".$api_key."";
         $array = $this->curlJsonUrlToArray($url);
@@ -245,71 +272,82 @@ class MealController extends Controller
         $summary = [['nutrient_id'=>'-1']];
         // loop through food list from recipe
         foreach ($foodlist['recipe']['foods'] as $food) {
-            // calls usda api
-            $api_key = Configuration::find("USDA-API-KEY")->value;
-            $url = "http://api.nal.usda.gov/ndb/reports/?ndbno=".$food['ndbno']."&type=f&format=json&api_key=".$api_key;
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_HEADER, false);  // don't return headers
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            $res = curl_exec($ch);
-            $err = curl_error($ch);
-            curl_close($ch);
-
-            $nut = array();
-//            $resp = array();
-            $resp = json_decode($res,true);
-
-            if ($err) {
-                $response[] = ['error', $err];
-            } else {
-                $nut = array();
-                // loop through nutrients
-                foreach ($resp['report']['food']['nutrients'] as $nutrient) {
-                    // loop through nutrient´s units of measure
-                    foreach($nutrient['measures'] as $measure) {
-                        // if label matches unit of measure from recipe
-                        if ($measure['label'] == $food['measure']) {
-                            // store nutrient information for this food
-                            $nut[] = [  'nutrient_id'    => $nutrient['nutrient_id']
-                                , 'nutrient_group' => $nutrient['group']
-                                , 'nutrient_name'  => $nutrient['name']
-                                , 'nutrient_unit'  => $nutrient['unit']
-                                , 'measure_value'  => $measure['value']
-                                , 'measure_label'  => $measure['label']
-                            ];
-
-                            // search for nutrient_id
-                            $key = (int)array_search($nutrient['nutrient_id'], array_column($summary, 'nutrient_id'), true);
-                            // if not found on sumary
-                            if ($key == 0) {
-                                // add to summary
-                                $summary[] = ['nutrient_id' => $nutrient['nutrient_id']
-                                    , 'group'  => $nutrient['group']
-                                    , 'name' => $nutrient['name']
-                                    , 'unit' => $nutrient['unit']
-                                    , 'value' => $measure['value'] * $food['qty']
-                                ];
-                            }
-                            else {
-                                // sum qty
-                                $summary[$key]['value'] += $measure['value'];
-                            }
-                        }
-                    }
-                }
-            }
-
-            // adds food information to the summary
-            $response[] = [   'food_ndbno' => $food['ndbno']
-                , 'food_qty'  =>   $food['qty']
-                , 'food_measure' => $food['measure']
-                , 'food_nutrients' => $nut
-            ];
-        }
-
-        // removes dummy first position
-        array_shift($summary);
+			
+			$nut = array();
+			if (!is_numeric($food['qty'])) {
+				$response[] = ['error','qty invalid'];
+			}
+			else {
+				
+				// calls usda api
+				$api_key = $this->configuration->find("USDA-API-KEY")->value;
+				$url = "http://api.nal.usda.gov/ndb/reports/?ndbno=".$food['ndbno']."&type=f&format=json&api_key=".$api_key; 
+				$ch = curl_init(); 
+				curl_setopt($ch, CURLOPT_URL, $url); 
+				curl_setopt($ch, CURLOPT_HEADER, false);  // don't return headers
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+				$res = curl_exec($ch); 
+				$err = curl_error($ch);
+				curl_close($ch);			
+					
+				$resp = array();
+				$resp = json_decode($res,true);
+	
+				if ($err) {
+					$response[] = ['error', $err];
+				} else {			
+					$nut = array();					
+					// loop through nutrients
+					foreach ($resp['report']['food']['nutrients'] as $nutrient) {
+						// loop through nutrient´s units of measure
+						foreach($nutrient['measures'] as $measure) { 
+							// if label matches unit of measure from recipe
+							if ($measure['label'] == $food['measure']) { 
+								// store nutrient information for this food             						
+								$nut[] = [  'nutrient_id'    => $nutrient['nutrient_id']
+										, 'nutrient_group' => $nutrient['group']
+										, 'nutrient_name'  => $nutrient['name']
+										, 'nutrient_unit'  => $nutrient['unit']
+										, 'measure_value'  => $measure['value'] 
+										, 'measure_label'  => $measure['label']
+										];
+															
+								// search for nutrient_id
+								$key = (int)array_search($nutrient['nutrient_id'], array_column($summary, 'nutrient_id'), true);							
+								// if not found on sumary
+								if ($key == 0) {
+									// add to summary
+									$summary[] = ['nutrient_id' => $nutrient['nutrient_id']
+									, 'group'  => $nutrient['group']
+									, 'name' => $nutrient['name']
+									, 'unit' => $nutrient['unit']
+									, 'value' => $measure['value'] * $food['qty']
+										];
+								}
+								else {							
+									// sum qty							
+									$summary[$key]['value'] += $measure['value'];
+								}
+							}
+						}		
+					}							
+				}
+			}	
+			// adds food information to the summary
+			if (empty($nut)){
+				$response[] = ['error', 'No nutrients retrieved. Probably invalid measure!'];
+			}
+			else {
+				$response[] = [   'food_ndbno' => $food['ndbno']
+								, 'food_qty'  =>   $food['qty']
+								, 'food_measure' => $food['measure']
+								, 'food_nutrients' => $nut					
+							]; 
+			}
+		}
+		
+		// removes dummy first position	
+		array_shift($summary);
 
         // response is an array of foods along with their nutritrients and nutrients summary
         $response = array('foods' => $response, 'sumary' => $summary);
@@ -335,27 +373,32 @@ class MealController extends Controller
     /*
      * Implemented by: @glandre
      */
-    private function bindRecipeData($request) {
+    private function bindRecipeData($request, $id=0) {
+        if($id != 0) {
+            // throws an exception if the register is not found
+            $editingRecipe = $this->recipe->findOrFail($id);
+        }
         // bind recipe from request
-        $newRecipe = Recipe::bind($request);
+        $editingRecipe = $this->recipe->bind($request);
         $foodsToSave = array();
         $invalid = array();
         
-        if($newRecipe->validate()) {
+        if($editingRecipe->validate()) {
             // bind each food by request
             foreach($request['foods'] as $recipeFood) {    
                 
-                $recipeFood = RecipeFood::bind($recipeFood);
+                $recipeFood = $this->recipeFood->bind($recipeFood);
                 if($recipeFood->validate()) {
                     $foodsToSave[] = $recipeFood;
                 }
                 else {
                     $invalid[] = $recipeFood;
                 }
+
             }
         }
         
-        return array($newRecipe, $foodsToSave, $invalid);
+        return array($editingRecipe, $foodsToSave, $invalid);
         
     }
 
