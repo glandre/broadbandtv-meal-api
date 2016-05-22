@@ -639,4 +639,12 @@ class MealController extends Controller {
         return $cType;
     }
 
+    private function responseMsgJson($success, $generalMessage, $errors){
+        return array(
+            'success' => $success,
+            'general_message' => $generalMessage,
+            'errors' => $errors
+        );
+    }
+
 }
