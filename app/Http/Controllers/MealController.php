@@ -139,7 +139,7 @@ class MealController extends Controller
      * Function: Retrieving a food by its NDBNO
      * Address: /api/meal/food-ndbno/1234
      * Method: GET
-     * Implemented by: @eossinu
+     * Implemented by: @rossini
      */
     public function getFoodNdbno($ndbno){
         $api_key = $this->configuration->find("USDA-API-KEY")->value;
