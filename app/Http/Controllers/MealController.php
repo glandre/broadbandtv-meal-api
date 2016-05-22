@@ -277,9 +277,22 @@ class MealController extends Controller
 		
      */
     public function postNutritionalInformation(){
-		$array = $this->request->all();
-        $json = json_encode($array);
-        $response = $this->calculate($json);
+        switch($this->contentType()) {
+            case "application/json":
+				$array = $this->request->all();
+				$json = json_encode($array);
+                
+                if(count($array) == 0) {
+                    app()->abort(501, 'Only JSON is supported');
+                    break;
+                }
+                                
+				$response = $this->calculate($json);
+                break;
+            default:
+                app()->abort(501, 'Only JSON is supported');
+        }
+
         return response()->json($response);
     }
 
@@ -319,10 +332,17 @@ class MealController extends Controller
 				$response[] = ['error','qty invalid'];
 			}
 			else {
-				
 				// calls usda api
-				$api_key = $this->configuration->find("USDA-API-KEY")->value;
-				$url = "http://api.nal.usda.gov/ndb/reports/?ndbno=".$food['ndbno']."&type=f&format=json&api_key=".$api_key; 
+				$usda_url = $this->configuration->find('USDA_REPORT_URL'); // http://api.nal.usda.gov/ndb/reports/
+				if ($usda_url == null) {
+					$usda_url = 'http://api.nal.usda.gov/ndb/reports/';
+				}
+				$format = $this->configuration->find('PREFERRED_FORMAT'); // 'json'
+				if ($format == null) {
+					$format = 'json';
+				}
+				$api_key = $this->configuration->find("USDA-API-KEY")->value;				
+				$url = $usda_url . "?ndbno=" . $food['ndbno'] . "&type=f&format=" . $format . "&api_key=" . $api_key;			//				$url = "http://api.nal.usda.gov/ndb/reports/?ndbno=".$food['ndbno']."&type=f&format=json&api_key=".$api_key; 
 				$ch = curl_init(); 
 				curl_setopt($ch, CURLOPT_URL, $url); 
 				curl_setopt($ch, CURLOPT_HEADER, false);  // don't return headers
