@@ -108,22 +108,20 @@ class MealController extends Controller
      * Function: Retrieving a food by its NDBNO
      * Address: /api/meal/food-ndbno/1234
      * Method: GET
-     * Implemented by:
+     * Implemented by: @rossini
      */
     public function getFoodNdbno($ndbno){
         $api_key = $this->configuration->find("USDA-API-KEY")->value;
-        
-        $url = "http://api.nal.usda.gov/ndb/reports/?ndbno=".$ndbno."&type=f&format=json&api_key=".$api_key."";
+        $url = "http://api.nal.usda.gov/ndb/reports/?ndbno={$ndbno}&type=f&format=json&api_key={$api_key}";
         $array = $this->curlJsonUrlToArray($url);
         $response = array();
-
         foreach($array["report"]->food->nutrients as $nutrient){
-
-            $response[] = array("name"=>$nutrient->name,
-									  "unit"=>$nutrient->unit,
-									  "value"=>$nutrient->value,
-									  "measure"=>$nutrient->measures);
-
+            $response[] = array(
+                "name"=>$nutrient->name,
+                "unit"=>$nutrient->unit,
+                "value"=>$nutrient->value,
+                "measure"=>$nutrient->measures
+            );
         }
         return response()->json($response);
     }
@@ -132,22 +130,18 @@ class MealController extends Controller
      * Function: Retrieving a list of foods by its name
      * Address: /api/meal/food-name/butter
      * Method: GET
-     * Implemented by:
+     * Implemented by: @rossini
      */
     public function getFoodName($name){
-        
         $api_key = Configuration::find("USDA-API-KEY")->value;
-        
-        $url = "http://api.nal.usda.gov/ndb/search/?format=json&q=".$name."&sort=n&max=100&offset=0&api_key=".$api_key."";
+        $url = "http://api.nal.usda.gov/ndb/search/?format=json&q={$name}&sort=n&max=100&offset=0&api_key={$api_key}";
         $array = $this->curlJsonUrlToArray($url);
         $response = array();
-
         foreach($array["list"]->item as $food){
-
-            $response[] = array("ndbno" => $food->ndbno,
-                                "name"=>$food->name
-                                );
-
+            $response[] = array(
+                "ndbno" => $food->ndbno,
+                "name"=>$food->name
+            );
         }
         return response()->json($response);
     }
