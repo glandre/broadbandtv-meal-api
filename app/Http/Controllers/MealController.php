@@ -30,28 +30,7 @@ class MealController extends Controller
      */
     public function postRecipe(){
         $request = $this->request->all();
-        
-        list($newRecipe, $foods, $invalid) = $this->bindRecipeData($request);
-        
-        $message = "Could not save recipe";
-        if(count($foods)) {
-            if ($newRecipe->save()) {
-                $newRecipe->recipeFoods()->saveMany($foods);
-                $message = (count($invalid) > 0) ? "Some data are not valid" : "Saved successfully";
-            }
-        }
-        else {
-            $message = "Invalid data";
-            // bad request
-        }
-
-        $response = array(
-            'message' => $message,
-            'saved_recipe' => $newRecipe,
-            'saved_foods' => $foods,
-            'invalid_foods' => $invalid
-        );
-        
+        $response = $this->updateRecipe($request);
         return response()->json($response);
     }
 
@@ -70,13 +49,59 @@ class MealController extends Controller
      * Function: Editing a saved recipe
      * Address: /api/meal/recipe/1234
      * Method: PUT
-     * Implemented by:
+     * Implemented by: @glandre
      */
     public function putRecipe($id){
-        $response = array(
-            "Implement this to edit a saved recipe where recipe id = $id",
-        );
+        $request = $this->request->all();
+        $response = $this->updateRecipe($request, $id);
         return response()->json($response);
+    }
+    
+    /*
+     * Function: Deleting a saved recipe
+     * Address: /api/meal/recipe/1234
+     * Method: DELETE
+     * Implemented by: @glandre
+     */
+    public function deleteRecipe($id) {
+        $recipe = $this->recipe->findOrFail($id);
+        
+        $response = "Could not delete recipe";
+        if($recipe->delete()) {
+            $response = "Recipe successfully deleted";
+        }
+        
+        return response()->json($response);
+    }
+    
+    /*
+     * Base method for PUT and POST methods
+     * Implemented by: @glandre
+     */
+    private function updateRecipe($request, $id = 0) {
+        
+        list($editingRecipe, $foods, $invalid) = $this->bindRecipeData($request, $id);
+        
+        $message = "Could not save recipe";
+        if(count($foods)) {
+            if ($editingRecipe->save()) {
+                
+                $editingRecipe->recipeFoods()->saveMany($foods);
+                $message = (count($invalid) > 0) ? "Some data are not valid" : "Saved successfully";
+            }
+        }
+        else {
+            $message = "Invalid data";
+            // bad request
+        }
+
+        return array(
+            'message' => $message,
+            'saved_recipe' => $editingRecipe,
+            'saved_foods' => $foods,
+            'invalid_foods' => $invalid
+        );
+        
     }
 
     /*
@@ -325,13 +350,17 @@ class MealController extends Controller
     /*
      * Implemented by: @glandre
      */
-    private function bindRecipeData($request) {
+    private function bindRecipeData($request, $id=0) {
+        if($id != 0) {
+            // throws an exception if the register is not found
+            $editingRecipe = $this->recipe->findOrFail($id);
+        }
         // bind recipe from request
-        $newRecipe = $this->recipe->bind($request);
+        $editingRecipe = $this->recipe->bind($request);
         $foodsToSave = array();
         $invalid = array();
         
-        if($newRecipe->validate()) {
+        if($editingRecipe->validate()) {
             // bind each food by request
             foreach($request['foods'] as $recipeFood) {    
                 
@@ -346,7 +375,7 @@ class MealController extends Controller
             }
         }
         
-        return array($newRecipe, $foodsToSave, $invalid);
+        return array($editingRecipe, $foodsToSave, $invalid);
         
     }
 
