@@ -36,7 +36,8 @@ class MealController extends Controller {
      * @param User $user
      * @author Bruno Henrique <bruno@lohl.com.br>
      */
-    public function __construct(Request $request, Recipe $recipe, RecipeFood $recipeFood, RecipeStep $recipeStep, RecipeTag $recipeTag, Configuration $configuration, User $user) {
+    public function __construct(Request $request, Recipe $recipe, RecipeFood $recipeFood, 
+            RecipeStep $recipeStep, RecipeTag $recipeTag, Configuration $configuration, User $user) {
         $this->request = $request;
         $this->recipe = $recipe;
         $this->recipeFood = $recipeFood;
@@ -126,6 +127,28 @@ class MealController extends Controller {
     }
 
     /**
+     * Editing a saved user
+     * Address: /api/meal/user/<user_id>
+     * Method: PUT
+     * @author Geraldo B. Landre <geraldo.landre@gmail.com>
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function putUser($id) {
+        $status = 200;
+        switch ($this->contentType()) {
+            case "application/json" :
+                $request = $this->request->all();
+                $response = $this->updateUser($request, $id);
+                break;
+            default:
+                $status = 501;
+                $response = array('error' => 501, 'message' => 'Only JSON is supported');
+        }
+        return response()->json($response, $status);
+    }
+
+    /**
      * Deleting a saved recipe
      * Address: /api/meal/recipe/<recipe_id>
      * Method: DELETE
@@ -145,7 +168,26 @@ class MealController extends Controller {
     }
 
     /**
-     * Base method for PUT and POST methods
+     * Deleting a saved user
+     * Address: /api/meal/recipe/<user_id>
+     * Method: DELETE
+     * @author Geraldo B. Landre <geraldo.landre@gmail.com>
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteUser($id) {
+        $user = $this->user->findOrFail($id);
+
+        $response = "Could not delete recipe";
+        if ($user->delete()) {
+            $response = "User successfully deleted";
+        }
+
+        return response()->json($response);
+    }
+
+    /**
+     * Base method for PUT and POST recipe methods
      * @author Geraldo B. Landre <geraldo.landre@gmail.com>
      * @author Rodrigo G Batistella <rgbatistella@gmail.com>
      * @param \Illuminate\Http\Request $request
@@ -192,6 +234,72 @@ class MealController extends Controller {
             'saved_tags' => $tags,
             'invalid_tags' => $invalidTags
         );
+    }
+    
+    /**
+     * Base method for PUT and POST user methods
+     * @author Geraldo B. Landre <geraldo.landre@gmail.com>
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
+     * @return array with the following fields: message, user
+     */
+    private function updateUser($request, $id = 0) {
+        $editingUser = ($id == 0) ? new User : $this->user->findOrFail($id);
+        $this->user->bind($request, $editingUser);
+        
+        $message = "Could not save user";
+        if($editingUser->save()) {
+            $message = "Saved successfully";
+        }     
+
+        return array(
+            'message' => $message,
+            'user' => $editingUser
+        );
+        
+    }
+    
+    
+    /**
+     * Function: Retrieving a saved user
+     * Address: /api/meal/recipe/<user_id>
+     * Method: GET
+     * @author Geraldo B. Landre <geraldo.landre@gmail.com>
+     * @param int $id User id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUser($id = 0) {
+        $response = ($id != 0) ? $this->user->find($id) : $this->user->all();
+        return response()->json($response);
+    }
+
+    /**
+     * Saving a new user.
+     * Address: /api/meal/user
+     * Method: POST
+     * @author Geraldo B. Landre <geraldo.landre@gmail.com>
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function postUser() {
+        $status = 200;
+        switch ($this->contentType()) {
+            case "application/json":
+                $request = $this->request->all();
+
+                if (count($request) == 0) {
+                    $status = 501;
+                    $response = array('error' => 501, 'message' => 'Only JSON is supported');
+                    break;
+                }
+
+                $response = $this->updateUser($request);
+                break;
+            default:
+                $status = 501;
+                $response = array('error' => 501, 'message' => 'Only JSON is supported');
+        }
+
+        return response()->json($response, $status);
     }
 
     /**
@@ -597,7 +705,7 @@ class MealController extends Controller {
 
         if (array_key_exists('recipe', $request)) {
             $request = $request['recipe'];
-                }
+        }
 
         // bind recipe from request
         $this->recipe->bind($request, $editingRecipe);
