@@ -456,7 +456,7 @@ class MealController extends Controller {
         $name = str_replace(" ",",",$name);
 
         //building url
-        $url = $usda_url . "?format=" . $format . "&q=" . $name . "&sort=n&max=100&offset=0&api_key=" . $api_key . "";
+        $url = "http://api.nal.usda.gov/ndb/search/?format=json&q=".$name."&sort=n&max=100&offset=0&api_key=".$api_key."";
 		
         //Setting array with USDA API result
         $array = $this->curlJsonUrlToArray($url);
