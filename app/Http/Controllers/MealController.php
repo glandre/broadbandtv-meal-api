@@ -54,25 +54,34 @@ class MealController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function postRecipe() {
+		$success = true;
         $status = 200;
+		$errors = array();
         switch ($this->contentType()) {
             case "application/json":
                 $request = $this->request->all();
 
                 if (count($request) == 0) {
+					$success = false;
                     $status = 501;
-                    $response = array('error' => 501, 'message' => 'Only JSON is supported');
+                    $errors[] = array('error' => 501, 'message' => 'Only JSON is supported');					
                     break;
                 }
 
-                $response = $this->updateRecipe($request);
+                $response = $this->updateRecipe($request,$errors);
+				if (!$response['success']) {
+					$errors[] = $response['errors'=>'message'];
+				}
                 break;
+
             default:
+				$success = false;
                 $status = 501;
-                $response = array('error' => 501, 'message' => 'Only JSON is supported');
+                $errors[] = array('error' => 501, 'message' => 'Only JSON is supported');
         }
 
-        return response()->json($response, $status);
+//        return response()->json($response, $status);
+		responseMsgJson($success, $response, $errors, $status);
     }
 
     /**
@@ -112,17 +121,25 @@ class MealController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function putRecipe($id) {
+		$success = true;
         $status = 200;
+		$errors = array();
+
         switch ($this->contentType()) {
             case "application/json" :
                 $request = $this->request->all();
                 $response = $this->updateRecipe($request, $id);
+				if (!$response['success']) {
+					$errors[] = $response['errors'=>'message'];
+				}
                 break;
             default:
+				$success = false;
                 $status = 501;
-                $response = array('error' => 501, 'message' => 'Only JSON is supported');
+                $errors[] = array('error' => 501, 'message' => 'Only JSON is supported');					
         }
-        return response()->json($response, $status);
+//        return response()->json($response, $status);
+		responseMsgJson($success, $response, $errors, $status);
     }
 
     /**
@@ -134,14 +151,22 @@ class MealController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function deleteRecipe($id) {
+		$success = true;
+        $status = 200;
+		$errors = array();
         $recipe = $this->recipe->findOrFail($id);
 
-        $response = "Could not delete recipe";
         if ($recipe->delete()) {
             $response = "Recipe successfully deleted";
-        }
+        } else {
+			$response = "Could not delete recipe";
+			$status = 400;
+			$success = false;
+		}
+			
 
-        return response()->json($response);
+//        return response()->json($response);
+		responseMsgJson($success, $response, $errors, $status);
     }
 
     /**
@@ -153,7 +178,7 @@ class MealController extends Controller {
      * @return array with the following fields: message, saved_recipe, saved_foods, invalid_foods, saved_steps, invalid_steps
      */
     private function updateRecipe($request, $id = 0) {
-
+		$success = false;
         list($editingRecipe, $foods, $invalid, $steps, $invalidSteps, $tags, $invalidTags) = $this->bindRecipeData($request, $id);
 
         $message = "Could not save recipe";
@@ -172,11 +197,13 @@ class MealController extends Controller {
                     $editingRecipe->recipeTags()->saveMany($tags);
                 }
 
+				$success = !((count($invalid) > 0) || (count($invalidSteps) > 0) || (count($invalidTags) > 0));
                 $message = (count($invalid) > 0) || (count($invalidSteps) > 0) || (count($invalidTags) > 0) ? "Some data are not valid" : "Saved successfully";
             }
 
 
         } else {
+			$success = false;
             $message = "Invalid data";
             // TODO: bad request
         }
@@ -191,6 +218,7 @@ class MealController extends Controller {
             'invalid_steps' => $invalidSteps,
             'saved_tags' => $tags,
             'invalid_tags' => $invalidTags
+			'success' => $success 
         );
     }
 
@@ -236,7 +264,7 @@ class MealController extends Controller {
             $error[] = array('code' => '404',
 							 'headers' => 'Food name invalid or not found');
 			
-            $response[] = responseMsgJson(false,"USDA API don't found any result",$error);
+            $response[] = responseMsgJson(false,"USDA API didn't find any result",$error, 400);
 
         } else{
 
@@ -320,7 +348,7 @@ class MealController extends Controller {
 			$error[] = array('code' => '404',
 							 'headers' => 'Food name invalid or not found');
 			
-            $response[] = responseMsgJson(false,"USDA API don't found any result",$error);
+            $response[] = responseMsgJson(false,"USDA API didn't find any result",$error);
 
         } else{
 			
@@ -597,7 +625,7 @@ class MealController extends Controller {
 
         if (array_key_exists('recipe', $request)) {
             $request = $request['recipe'];
-                }
+        }
 
         // bind recipe from request
         $this->recipe->bind($request, $editingRecipe);
@@ -683,12 +711,15 @@ class MealController extends Controller {
      * @author Bruno Henrique <bruno@lohl.com.br>
      * @return \Illuminate\Http\JsonResponse
      */
-    private function responseMsgJson($success, $generalMessage, $errors){
-        return response()->json(array(
-            'success' => $success,
-            'general_message' => $generalMessage,
-            'errors' => $errors
-        ));
+    private function responseMsgJson($success, $generalMessage, $errors, $status = 200){
+        return response()->json(
+								array(
+									'success' => $success,
+									'general_message' => $generalMessage,
+									'errors' => $errors
+								)
+							  , $status	
+							);
     }
 
 }
