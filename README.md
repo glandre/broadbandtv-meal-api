@@ -32,7 +32,9 @@ Any related feature you think would be cool or useful.
 - Composer
 - SQL Database (MySQL is preferred, but you can use any PDO's possibility)
 
-Important: For the above tutorial, we are going to use MySQL Database
+> Important: For the above tutorial, we are going to use MySQL Database.
+
+> Important: Be sure to create a new database before iniciate install process
 
 ##How to Install
 Download the zip file and unzip it in your local machine.
