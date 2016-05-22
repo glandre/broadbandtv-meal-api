@@ -374,13 +374,11 @@ class MealController extends Controller {
         $api_key = $this->configuration->find("USDA-API-KEY")->value;
 
         //building url
-<<<<<<< HEAD
-        $url = $usda_url . "?ndbno=" . $ndbno . "&type=f&format=" . $format . "&api_key= " . $api_key;
 
-=======
-        $url = "http://api.nal.usda.gov/ndb/reports/?ndbno=".$ndbno."&type=f&format=json&api_key=BaKxZk2ziMCjeBGPJLlN8vw3VLmf2ypZbA6InZik";
+//        $url = $usda_url . "?ndbno=" . $ndbno . "&type=f&format=" . $format . "&api_key= " . $api_key;
+
+        $url = "http://api.nal.usda.gov/ndb/reports/?ndbno=".$ndbno."&type=f&format=json&api_key=".$api_key;
 		
->>>>>>> 1400ab978dbb9b41e02a5195b5717248527475f8
         //Setting array with USDA API result
         $array = $this->curlJsonUrlToArray($url);
 
