@@ -146,11 +146,7 @@ php artisan serve
 "measure" : "cup, melted",
 "name" : "Another ingredient"
 }
-],
-"auth" : {
-       "name" : "ilya",
-       "password" : "rOuUb06Qp0EEv1jH1toQbUbHeXL4AFZHLfO184rt8CVW3jWCQdQoFn4ADTl6"
-}
+]
 }
 ```
 
