@@ -15,7 +15,6 @@ class MealController extends Controller
     private $recipeFood;
     private $recipeStep; //@rgbatistella
     private $configuration;
-    private $app;
 
     public function __construct(Request $request, Recipe $recipe, RecipeFood $recipeFood, RecipeStep $recipeStep, Configuration $configuration){
         //Dependecy Injection
@@ -39,16 +38,14 @@ class MealController extends Controller
                 $request = $this->request->all();
                 
                 if(count($request) == 0) {
-//                    $this->app->abort(501, 'Only JSON is supported');
-                    \App::abort(501, 'Only JSON is supported');
+                    app()->abort(501, 'Only JSON is supported');
                     break;
                 }
                 
                 $response = $this->updateRecipe($request);
                 break;
             default:
-//                $this->app->abort(501, 'Only JSON is supported');
-                \App::abort(501, 'Only JSON is supported');
+                app()->abort(501, 'Only JSON is supported');
         }
         
         return response()->json($response);
@@ -60,8 +57,8 @@ class MealController extends Controller
      * Method: GET
      * Implemented by: @glandre
      */
-    public function getRecipe($id){
-        $response = $this->recipe->find($id);
+    public function getRecipe($id=0){
+        $response = ($id != 0) ? $this->recipe->find($id) : $this->recipe->all();
         return response()->json($response);
     }
 
@@ -89,8 +86,7 @@ class MealController extends Controller
                 $response = $this->updateRecipe($request, $id);
                 break;
             default:
-//                $this->app->abort(501, 'Only JSON is supported');
-                \App::abort(501, 'Only JSON is supported');
+                app()->abort(501, 'Only JSON is supported');
         }
         return response()->json($response);
     }
@@ -156,22 +152,20 @@ class MealController extends Controller
      * Function: Retrieving a food by its NDBNO
      * Address: /api/meal/food-ndbno/1234
      * Method: GET
-     * Implemented by:
+     * Implemented by: @rossini
      */
     public function getFoodNdbno($ndbno){
         $api_key = $this->configuration->find("USDA-API-KEY")->value;
-        
-        $url = "http://api.nal.usda.gov/ndb/reports/?ndbno=".$ndbno."&type=f&format=json&api_key=".$api_key."";
+        $url = "http://api.nal.usda.gov/ndb/reports/?ndbno={$ndbno}&type=f&format=json&api_key={$api_key}";
         $array = $this->curlJsonUrlToArray($url);
         $response = array();
-
         foreach($array["report"]->food->nutrients as $nutrient){
-
-            $response[] = array("name"=>$nutrient->name,
-									  "unit"=>$nutrient->unit,
-									  "value"=>$nutrient->value,
-									  "measure"=>$nutrient->measures);
-
+            $response[] = array(
+                "name"=>$nutrient->name,
+                "unit"=>$nutrient->unit,
+                "value"=>$nutrient->value,
+                "measure"=>$nutrient->measures
+            );
         }
         return response()->json($response);
     }
@@ -183,10 +177,8 @@ class MealController extends Controller
      * Implemented by: @rossini
      */
     public function getFoodName($name){
-        
         $api_key = $this->configuration->find("USDA-API-KEY")->value;
-        
-        $url = "http://api.nal.usda.gov/ndb/search/?format=json&q=".$name."&sort=n&max=100&offset=0&api_key=".$api_key."";
+        $url = "http://api.nal.usda.gov/ndb/search/?format=json&q={$name}&sort=n&max=100&offset=0&api_key={$api_key}";
         $array = $this->curlJsonUrlToArray($url);
         $response = array();
         foreach($array["list"]->item as $food){
