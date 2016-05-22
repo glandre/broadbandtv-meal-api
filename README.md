@@ -201,3 +201,23 @@ ___
 - Address: http://domain:port/api/meal/nutritional-information/\<recipe_id\>
 - Method: GET
 - Return: JSON
+
+##Error Response
+When a method finds an error during execution, it will return an Error Response.
+- success = [true|false]
+- general_message = returns a string showing the error description
+- errors = can show one or alist of errors
+
+```json
+{
+    success:false,
+    general_message:"You have reached your max number of Foos for the day",
+    errors: {
+        last_name:"This field is required",
+        mrn:"Either SSN or MRN must be entered",
+        zipcode:"996852 is not in Bernalillo county. Only Bernalillo residents are eligible"
+    }
+} 
+```
+##Troubleshooting
+
