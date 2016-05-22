@@ -577,6 +577,8 @@ class MealController extends Controller {
     public function postNutritionalInformation() {
         $status = 200;
         $success = true;
+		$errors = [];
+		$response = [];
 
         switch ($this->contentType()) {
             case "application/json":
