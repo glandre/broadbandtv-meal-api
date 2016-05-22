@@ -11,7 +11,7 @@ class RecipeFoodsTableSeeder extends Seeder {
         DB::table('recipe_foods')->delete();
  
         $recipe_foods = array(
-            ['nbno' => "01009", 'name' => 'Cheese, cheddar', 'qty' => 132.0, 'recipe_id' => 1],
+            ['ndbno' => "01009", 'name' => 'Cheese, cheddar', 'qty' => 132.0, 'recipe_id' => 1],
         );
  
         // Uncomment the below to run the seeder
