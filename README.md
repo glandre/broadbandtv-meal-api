@@ -22,13 +22,16 @@ Any related feature you think would be cool or useful.
 
 #Instructions
 
-Information
+##Information
 BroadbandTV-Meal-API
 RESTfull JSON API
 Version 1.0.0.0
 
-Requistes
+##Requistes
 PHP5.6 or higher
+Composer
 
-How to Install
+##How to Install
 Download the zip file and unzip it in your local machine.
+
+###Windows
