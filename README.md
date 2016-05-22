@@ -120,6 +120,8 @@ php artisan serve
 
 ##Available API Routes
 
+> Important: Change http://domain:port with your domain and port. (eg: http://localhost:8000)
+
 ###Recipe
 
 ####Saving a new recipe
