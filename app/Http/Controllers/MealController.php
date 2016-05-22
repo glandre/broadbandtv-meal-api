@@ -68,7 +68,7 @@ class MealController extends Controller
      * Method: GET
      * Implemented by: @glandre
      */
-    public function getUserRecipe($user_id){
+    public function getUserRecipes($user_id){
         $response = $this->recipe->where('user_id', $user_id)->get();
         return response()->json($response);
     }
