@@ -10,6 +10,11 @@ use App\User;
 use App\RecipeStep;
 use App\RecipeTag;
 
+/**
+ * Class MealController
+ * @package App\Http\Controllers
+ * @author Bruno Henrique <bruno@lohl.com.br>
+ */
 class MealController extends Controller {
 
     private $request;
@@ -20,8 +25,18 @@ class MealController extends Controller {
     private $configuration;
     private $user;
 
+    /**
+     * MealController constructor with Dependency Injection
+     * @param Request $request
+     * @param Recipe $recipe
+     * @param RecipeFood $recipeFood
+     * @param RecipeStep $recipeStep
+     * @param RecipeTag $recipeTag
+     * @param Configuration $configuration
+     * @param User $user
+     * @author Bruno Henrique <bruno@lohl.com.br>
+     */
     public function __construct(Request $request, Recipe $recipe, RecipeFood $recipeFood, RecipeStep $recipeStep, RecipeTag $recipeTag, Configuration $configuration, User $user) {
-        //Dependecy Injection
         $this->request = $request;
         $this->recipe = $recipe;
         $this->recipeFood = $recipeFood;
@@ -389,6 +404,7 @@ class MealController extends Controller {
      * 
      * @example Examples/nutritional-information.php This file provides Reference information and content examples
      * @author Rodrigo G Batistella <rgbatistella@gmail.com>
+     * @author Bruno Henrique <bruno@lohl.com.br>
      * @return \Illuminate\Http\JsonResponse
      */
     public function postNutritionalInformation() {
@@ -639,6 +655,13 @@ class MealController extends Controller {
         return $cType;
     }
 
+    /**
+     * Generates a default JSON message to return
+     * @param $success
+     * @param $generalMessage
+     * @param $errors
+     * @return \Illuminate\Http\JsonResponse
+     */
     private function responseMsgJson($success, $generalMessage, $errors){
         return response()->json(array(
             'success' => $success,
