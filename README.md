@@ -265,7 +265,9 @@ ___
 //
 ```
 
-##Error Response
+##Error and Logging Handling
+
+###Default Error Response
 When a method finds an error during execution, it will return an Error Response.
 - success = [true|false]
 - general_message = returns a string showing the error description
