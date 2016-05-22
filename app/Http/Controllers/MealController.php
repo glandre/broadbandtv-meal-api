@@ -7,20 +7,23 @@ use App\Configuration;
 use App\Recipe;
 use App\RecipeFood;
 use App\User;
+use App\RecipeStep; //@rgbatistella
 
 class MealController extends Controller
 {
     private $request;
     private $recipe;
     private $recipeFood;
+    private $recipeStep; //@rgbatistella
     private $configuration;
     private $user;
 
-    public function __construct(Request $request, Recipe $recipe, RecipeFood $recipeFood, Configuration $configuration, User $user){
+    public function __construct(Request $request, Recipe $recipe, RecipeFood $recipeFood, RecipeStep $recipeStep, Configuration $configuration, User $user)){
         //Dependecy Injection
         $this->request = $request;
         $this->recipe = $recipe;
         $this->recipeFood = $recipeFood;
+        $this->recipeStep = $recipeStep; //@rgbatistella
         $this->configuration = $configuration;
         $this->user = $user;
     }
@@ -118,26 +121,39 @@ class MealController extends Controller
      */
     private function updateRecipe($request, $id = 0) {
         
-        list($editingRecipe, $foods, $invalid) = $this->bindRecipeData($request, $id);
+        list($editingRecipe, $foods, $invalid, $steps, $invalidSteps) = $this->bindRecipeData($request, $id);
         
         $message = "Could not save recipe";
         if(count($foods)) {
             if ($editingRecipe->save()) {
                 
+				$editingRecipe->recipeFoods()->delete();
                 $editingRecipe->recipeFoods()->saveMany($foods);
-                $message = (count($invalid) > 0) ? "Some data are not valid" : "Saved successfully";
+
+				//@rgbatistella
+				if(count($steps)) {
+					$editingRecipe->recipeSteps()->delete();
+					$editingRecipe->recipeSteps()->saveMany($steps);
+				}
+				
+                $message = (count($invalid) > 0)||(count($invalidSteps) > 0) ? "Some data are not valid" : "Saved successfully";
             }
+			
+
         }
         else {
             $message = "Invalid data";
             // bad request
         }
 
+		
         return array(
             'message' => $message,
             'saved_recipe' => $editingRecipe,
             'saved_foods' => $foods,
-            'invalid_foods' => $invalid
+            'invalid_foods' => $invalid,
+            'saved_steps' => $steps,
+            'invalid_foods' => $invalidSteps
         );
         
     }
@@ -146,7 +162,7 @@ class MealController extends Controller
      * Function: Retrieving a food by its NDBNO
      * Address: /api/meal/food-ndbno/1234
      * Method: GET
-     * Implemented by: @eossinu
+     * Implemented by: @rossini
      */
     public function getFoodNdbno($ndbno){
         $api_key = $this->configuration->find("USDA-API-KEY")->value;
@@ -409,15 +425,23 @@ class MealController extends Controller
         
         $editingRecipe = ($id == 0) ? new Recipe : $this->recipe->findOrFail($id);
         
+		if (array_key_exists('recipe',$request)) {
+			$request = $request['recipe'];
+		}
+
         // bind recipe from request
         $this->recipe->bind($request, $editingRecipe);
         $foodsToSave = array();
+		
+		$stepsToSave = array(); //@rgbatistella
+		
         $invalid = array();
         
+        $invalidSteps = array(); //@rgbatistella
+
         if($editingRecipe->validate()) {
             // bind each food by request
-            foreach($request['foods'] as $recipeFood) {    
-                
+            foreach($request['foods'] as $recipeFood) {                    
                 $recipeFood = $this->recipeFood->bind($recipeFood);
                 if($recipeFood->validate()) {
                     $foodsToSave[] = $recipeFood;
@@ -425,11 +449,22 @@ class MealController extends Controller
                 else {
                     $invalid[] = $recipeFood;
                 }
-
             }
+			
+            // @rgbatistella: bind each step by request
+            foreach($request['steps'] as $recipeStep) {                    
+                $recipeStep = $this->recipeStep->bind($recipeStep);
+                if($recipeStep->validate()) {
+                    $stepsToSave[] = $recipeStep;
+                }
+                else {
+                    $invalidSteps[] = $recipeStep;
+                }
+            }
+			
         }
         
-        return array($editingRecipe, $foodsToSave, $invalid);
+        return array($editingRecipe, $foodsToSave, $invalid, $stepsToSave, $invalidSteps); //@rgbatistella: added steps
         
     }
 
