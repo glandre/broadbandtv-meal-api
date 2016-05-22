@@ -120,7 +120,7 @@ php artisan serve
 
 ###Recipe
 
-####Save a new recipe
+####Saving a new recipe
 - Address: http://domain:port/api/recipe
 - Method: POST
 - Return: JSON
