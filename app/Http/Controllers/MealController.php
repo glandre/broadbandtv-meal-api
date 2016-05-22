@@ -12,19 +12,21 @@ class MealController extends Controller
     private $request;
     private $recipe;
     private $recipeFood;
+    private $configuration;
 
-    public function __construct(Request $request, Recipe $recipe, RecipeFood $recipeFood){
+    public function __construct(Request $request, Recipe $recipe, RecipeFood $recipeFood, Configuration $configuration){
         //Dependecy Injection
         $this->request = $request;
         $this->recipe = $recipe;
         $this->recipeFood = $recipeFood;
+        $this->configuration = $configuration;
     }
 
     /*
      * Function: Saving a new recipe
      * Address: /api/meal/recipe
      * Method: POST
-     * Implemented by:
+     * Implemented by: @glandre
      */
     public function postRecipe(){
         $request = $this->request->all();
@@ -60,7 +62,7 @@ class MealController extends Controller
      * Implemented by: @glandre
      */
     public function getRecipe($id){
-        $response = Recipe::find($id);
+        $response = $this->recipe->find($id);
         return response()->json($response);
     }
 
@@ -84,7 +86,7 @@ class MealController extends Controller
      * Implemented by:
      */
     public function getFoodNdbno($ndbno){
-        $api_key = Configuration::find("USDA-API-KEY")->value;
+        $api_key = $this->configuration->find("USDA-API-KEY")->value;
         
         $url = "http://api.nal.usda.gov/ndb/reports/?ndbno=".$ndbno."&type=f&format=json&api_key=".$api_key."";
         $array = $this->curlJsonUrlToArray($url);
@@ -325,7 +327,7 @@ class MealController extends Controller
      */
     private function bindRecipeData($request) {
         // bind recipe from request
-        $newRecipe = Recipe::bind($request);
+        $newRecipe = $this->recipe->bind($request);
         $foodsToSave = array();
         $invalid = array();
         
@@ -333,13 +335,14 @@ class MealController extends Controller
             // bind each food by request
             foreach($request['foods'] as $recipeFood) {    
                 
-                $recipeFood = RecipeFood::bind($recipeFood);
+                $recipeFood = $this->recipeFood->bind($recipeFood);
                 if($recipeFood->validate()) {
                     $foodsToSave[] = $recipeFood;
                 }
                 else {
                     $invalid[] = $recipeFood;
                 }
+
             }
         }
         
