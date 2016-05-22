@@ -30,7 +30,7 @@ Any related feature you think would be cool or useful.
 ##Requirements
 - PHP5.6 or higher
 - Composer
-- SQL Database (MySQL is preferred, but you can use any PDO possibility)
+- SQL Database (MySQL is preferred, but you can use any PDO's possibility)
 
 Important: For the above tutorial, we are going to use MySQL Database
 
@@ -116,19 +116,48 @@ You don't have any Web Server in your machine? No problem. Make sure you are ins
 php artisan serve
 ```
 
-##Usage
+##Available API Routes
 
 ###Recipe
 
 ####Saving a new recipe
-- Address: http://domain:port/api/recipe
+- Address: http://domain:port/api/meal/recipe
 - Method: POST
 - Return: JSON
+- Post Content:
+```php
+{
+"name" : "One Recipe with Two Valid Foods123",
+"user_id" : 3,
+"foods" : [
+{
+"ndbno" : "01005",
+"qty" : 2,
+"measure" : "cup, diced", 
+"name" : "First Food"
+},
+{
+"ndbno" : "01009",
+"qty" : 1,
+"measure" : "cup, melted",
+"name" : "Another ingredient"
+}
+],
+"auth" : {
+       "name" : "ilya",
+       "password" : "rOuUb06Qp0EEv1jH1toQbUbHeXL4AFZHLfO184rt8CVW3jWCQdQoFn4ADTl6"
+}
+}
+```
 
 ####Editing a saved recipe
 - Address: http://domain:port/api/meal/recipe/\<recipe_id\>
 - Method: PUT
 - Return: JSON
+- Post Content:
+```php
+//
+```
 
 ####Deleting a saved recipe
 - Address: http://domain:port/api/meal/recipe/\<recipe_id\>
@@ -153,11 +182,19 @@ ___
 - Address: http://domain:port/api/meal/user
 - Method: POST
 - Return: JSON
+- Post Content:
+```php
+//
+```
 
 ####Editing a saved user
 - Address: http://domain:port/api/meal/user/\<user_id\>
 - Method: PUT
 - Return: JSON
+- Post Content:
+```php
+//
+```
 
 ####Deleting a saved user
 - Address: http://domain:port/api/meal/user/\<user_id\>
@@ -196,11 +233,19 @@ ___
 - Address: http://domain:port/api/meal/nutritional-information/
 - Method: POST
 - Return: JSON
+- Post Content:
+```php
+//
+```
 
 ####Retrieving a recipe nutritional information
 - Address: http://domain:port/api/meal/nutritional-information/\<recipe_id\>
 - Method: GET
 - Return: JSON
+- Post Content:
+```php
+//
+```
 
 ##Error Response
 When a method finds an error during execution, it will return an Error Response.
@@ -227,7 +272,7 @@ Depending on the PHP version, it could happen during POST requests.
 
 > Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set ‘always_populate_raw_post_data’ to ‘-1’ in php.ini and use the php://input stream instead. in Unknown on line 0
 
-- How to solve:
+- How to solve it:
 Configure your php.ini file as follows:
 ```
 ; Always populate the $HTTP_RAW_POST_DATA variable. PHP's default behavior is

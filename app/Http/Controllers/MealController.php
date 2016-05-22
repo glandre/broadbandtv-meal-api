@@ -64,6 +64,7 @@ class MealController extends Controller {
 
                 if (count($request) == 0) {
                     $success = false;
+                    $response = [];
                     $status = 501;
                     $errors[] = array('error' => 501, 'message' => 'Only JSON is supported');					
                     break;
@@ -78,11 +79,11 @@ class MealController extends Controller {
             default:
 		$success = false;
                 $status = 501;
+				$response = [];
                 $errors[] = array('error' => 501, 'message' => 'Only JSON is supported');
         }
 
-//        return response()->json($response, $status);
-	return $this->responseMsgJson($success, $response, $errors, $status);
+        return $this->responseMsgJson($success, $response, $errors, $status);
     }
 
     /**
@@ -137,10 +138,10 @@ class MealController extends Controller {
             default:
                 $success = false;
                 $status = 501;
+                $response = [];
                 $errors[] = array('error' => 501, 'message' => 'Only JSON is supported');					
         }
-//        return response()->json($response, $status);
-		responseMsgJson($success, $response, $errors, $status);
+        return $this->responseMsgJson($success, $response, $errors, $status);
     }
 
     /**
@@ -187,9 +188,7 @@ class MealController extends Controller {
             $success = false;
         }
 			
-
-//        return response()->json($response);
-		responseMsgJson($success, $response, $errors, $status);
+        return $this->responseMsgJson($success, $response, $errors, $status);
     }
 
     /**
@@ -201,14 +200,21 @@ class MealController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function deleteUser($id) {
+        $success = true;
+        $errors = [];
+        $status = 200;
         $user = $this->user->findOrFail($id);
 
         $response = "Could not delete recipe";
         if ($user->delete()) {
             $response = "User successfully deleted";
-        }
+			$status = 400;
+        } else {
+			$success = false;
+            $response = "User NOT deleted";
+		}
 
-        return response()->json($response);
+	return $this->responseMsgJson($success, $response, $errors, $status);
     }
 
     /**
@@ -569,7 +575,8 @@ class MealController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function postNutritionalInformation() {
-		$status = 200;
+        $status = 200;
+        $success = true;
 
         switch ($this->contentType()) {
             case "application/json":
@@ -577,19 +584,23 @@ class MealController extends Controller {
                 $json = json_encode($array);
 
                 if (count($array) == 0) {                    
-					$status = 501;
-                    $response = array('error' => 501, 'message' => 'Only JSON is supported');
+					$success = false;
+					$response = [];
+                    $status = 501;
+                    $errors[] = array('error' => 501, 'message' => 'Only JSON is supported');					
                     break;
                 }
 
                 $response = $this->calculate($json);
                 break;
             default:
+				$success = false;
+				$response = [];
                 $status = 501;
-                $response = array('error' => 501, 'message' => 'Only JSON is supported');
+                $errors[] = array('error' => 501, 'message' => 'Only JSON is supported');					
         }
 
-        return response()->json($response);
+        return $this->responseMsgJson($success, $response, $errors, $status);
     }
 
     /**
@@ -739,7 +750,6 @@ class MealController extends Controller {
     private function bindRecipeData($request, $id = 0) {
 
         $editingRecipe = (intval($id) == 0) ? new Recipe : $this->recipe->findOrFail($id);
-        
         if (array_key_exists('recipe', $request)) {
             $request = $request['recipe'];
         }
@@ -838,6 +848,6 @@ class MealController extends Controller {
                     )
               , $status	
             );
-}
+    }
 
 }

@@ -44,34 +44,43 @@ class Handler extends ExceptionHandler
      * @return \Illuminate\Http\Response
      */
     public function render($request, Exception $e)
-    {
-     //   return parent::render($request, $e);
+    {	
 		// Default response of 400		
-		
         $status = 400;
 
         // If this exception is an instance of HttpException
-        if ($this->isHttpException($e))
-        {
+        if ($this->isHttpException($e)) {
             // Grab the HTTP status code from the Exception
             $status = $e->getStatusCode();
         }
 
-			
-		$json = [
-            'success' => false,
-         //   'general_message' => $e->getTrace(),
-		    'general_message' => 'API exception',
-            'error' => [
-                'code' => $e->getCode(),
-                'message' => $e->getMessage(),
-                'exception'=> get_class($e),
-				'stackTrace'=>$e->getTrace(),
-				
-            ],
-        ];
+		if (config('app.debug')) {
+			$json = [
+				'success' => false,
+				'general_message' => 'API exception',
+				'error' => [
+					'code' => $e->getCode(),
+					'message' => $e->getMessage(),
+					'exception'=> get_class($e),
+					'stackTrace'=>$e->getTrace(),
+					
+				],
+			];
+		}
+		else {
+			$json = [
+				'success' => false,
+				'general_message' => 'API exception',
+				'error' => [
+					'code' => $e->getCode(),
+					'message' => $e->getMessage(),
+					'exception'=> get_class($e),
+					
+				],
+			];
+		}
 		 	 
         return response()->json($json, $status);		 
-		 
+		// return parent::render($request, $e); // original renderer, just for reference 
     }
 }
