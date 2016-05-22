@@ -15,6 +15,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+//Route::group(['prefix' => 'api', 'middleware' => ['auth']], function (){
 Route::group(['prefix' => 'api'], function (){
     Route::controller('meal', 'MealController');
 });

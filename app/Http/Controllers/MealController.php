@@ -55,7 +55,7 @@ class MealController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function postRecipe() {
-		$success = true;
+	$success = true;
         $status = 200;
 		$errors = array();
         switch ($this->contentType()) {
@@ -63,26 +63,26 @@ class MealController extends Controller {
                 $request = $this->request->all();
 
                 if (count($request) == 0) {
-					$success = false;
+                    $success = false;
                     $status = 501;
                     $errors[] = array('error' => 501, 'message' => 'Only JSON is supported');					
                     break;
                 }
-
+                
                 $response = $this->updateRecipe($request,$errors);
-				if (!$response['success']) {
-					$errors[] = ['errors'=>$response['message']];
-				}
+                if (!$response['success']) {
+                        $errors[] = ['errors'=>$response['message']];
+                }
                 break;
 
             default:
-				$success = false;
+		$success = false;
                 $status = 501;
                 $errors[] = array('error' => 501, 'message' => 'Only JSON is supported');
         }
 
 //        return response()->json($response, $status);
-		responseMsgJson($success, $response, $errors, $status);
+	return $this->responseMsgJson($success, $response, $errors, $status);
     }
 
     /**
@@ -94,7 +94,7 @@ class MealController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function getRecipe($id = 0) {
-        $response = ($id != 0) ?
+        $response = (intval($id) != 0) ?
                 $this->recipe->with('recipeSteps', 'recipeFoods', 'recipeTags')->find($id) :
                 $this->recipe->with('recipeSteps', 'recipeFoods', 'recipeTags')->get();
         return response()->json($response);
@@ -122,20 +122,20 @@ class MealController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function putRecipe($id) {
-		$success = true;
+        $success = true;
         $status = 200;
-		$errors = array();
+        $errors = array();
 
         switch ($this->contentType()) {
             case "application/json" :
                 $request = $this->request->all();
                 $response = $this->updateRecipe($request, $id);
-				if (!$response['success']) {
-					$errors[] = ['errors'=>$response['message']];
-				}
+                if (!$response['success']) {
+                        $errors[] = ['errors'=>$response['message']];
+                }
                 break;
             default:
-				$success = false;
+                $success = false;
                 $status = 501;
                 $errors[] = array('error' => 501, 'message' => 'Only JSON is supported');					
         }
@@ -174,18 +174,18 @@ class MealController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function deleteRecipe($id) {
-		$success = true;
+	$success = true;
         $status = 200;
-		$errors = array();
+        $errors = array();
         $recipe = $this->recipe->findOrFail($id);
 
         if ($recipe->delete()) {
             $response = "Recipe successfully deleted";
         } else {
-			$response = "Could not delete recipe";
-			$status = 400;
-			$success = false;
-		}
+            $response = "Could not delete recipe";
+            $status = 400;
+            $success = false;
+        }
 			
 
 //        return response()->json($response);
@@ -220,7 +220,7 @@ class MealController extends Controller {
      * @return array with the following fields: message, saved_recipe, saved_foods, invalid_foods, saved_steps, invalid_steps
      */
     private function updateRecipe($request, $id = 0) {
-		$success = false;
+	$success = false;
         list($editingRecipe, $foods, $invalid, $steps, $invalidSteps, $tags, $invalidTags) = $this->bindRecipeData($request, $id);
 
         $message = "Could not save recipe";
@@ -306,7 +306,7 @@ class MealController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function getUser($id = 0) {
-        $response = ($id != 0) ? $this->user->find($id) : $this->user->all();
+        $response = (intval($id) != 0) ? $this->user->find($id) : $this->user->all();
         return response()->json($response);
     }
 
@@ -361,27 +361,27 @@ class MealController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function getFoodNdbno($ndbno) {
-		//setting variable
+        //setting variable
         $usda_url = $this->configuration->find('USDA_REPORT_URL');
         $format = $this->configuration->find('PREFERRED_FORMAT');
         $api_key = $this->configuration->find("USDA-API-KEY")->value;
 
-		//building url
+        //building url
         $url = $usda_url . "?ndbno=" . $ndbno . "&type=f&format=" . $format . "&api_key= " . $api_key;
 		
-		//Setting array with USDA API result
+        //Setting array with USDA API result
         $array = $this->curlJsonUrlToArray($url);
 
         //Setting Arrays
         $response = array();
-		$error = array();
+        $error = array();
 
         if (isset($array["errors"])){
 
-            $error[] = array('code' => '404',
-							 'headers' => 'Food name invalid or not found');
-			
-            $response[] = responseMsgJson(false,"USDA API didn't find any result",$error, 400);
+        $error[] = array('code' => '404',
+                                                     'headers' => 'Food name invalid or not found');
+
+        $response[] = responseMsgJson(false,"USDA API didn't find any result",$error, 400);
 
         } else{
 
@@ -440,30 +440,30 @@ class MealController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function getFoodName($name) {
-		//setting variable
+        //setting variable
         $usda_url = $this->configuration->find('USDA_SEARCH_URL');
         $format = $this->configuration->find('PREFERRED_FORMAT');
         $api_key = $this->configuration->find("USDA-API-KEY")->value;
 		
-		//Chaging $name format to USDA API format
-		$name = trim($name);
-		$name = str_replace(" ",",",$name);
+        //Chaging $name format to USDA API format
+        $name = trim($name);
+        $name = str_replace(" ",",",$name);
 
-		//building url
+        //building url
         $url = $usda_url . "?format=" . $format . "&q=" . $name . "&sort=n&max=100&offset=0&api_key=" . $api_key . "";
 		
-		//Setting array with USDA API result
+        //Setting array with USDA API result
         $array = $this->curlJsonUrlToArray($url);
 
-		//Setting Arrays
+        //Setting Arrays
         $response = array();
-		$error = array();
-		
-		//Checking if have some error
+        $error = array();
+
+        //Checking if have some error
         if (isset($array["errors"])){
 			
-			$error[] = array('code' => '404',
-							 'headers' => 'Food name invalid or not found');
+            $error[] = array('code' => '404',
+                            'headers' => 'Food name invalid or not found');
 			
             $response[] = responseMsgJson(false,"USDA API didn't find any result",$error);
 
@@ -738,14 +738,15 @@ class MealController extends Controller {
      */
     private function bindRecipeData($request, $id = 0) {
 
-        $editingRecipe = ($id == 0) ? new Recipe : $this->recipe->findOrFail($id);
-
+        $editingRecipe = (intval($id) == 0) ? new Recipe : $this->recipe->findOrFail($id);
+        
         if (array_key_exists('recipe', $request)) {
             $request = $request['recipe'];
         }
 
         // bind recipe from request
         $this->recipe->bind($request, $editingRecipe);
+        
         $foodsToSave = array();
 
         $stepsToSave = array();
@@ -801,7 +802,7 @@ class MealController extends Controller {
      * Implemented by: @brunolohl
      */
 
-    public function postTeste() {
+    public function postTest() {
         $response = $this->request->all();
         return response()->json($response);
     }
@@ -830,13 +831,13 @@ class MealController extends Controller {
      */
     private function responseMsgJson($success, $generalMessage, $errors, $status = 200){
         return response()->json(
-								array(
-									'success' => $success,
-									'general_message' => $generalMessage,
-									'errors' => $errors
-								)
-							  , $status	
-							);
-    }
+                    array(
+                            'success' => $success,
+                            'general_message' => $generalMessage,
+                            'errors' => $errors
+                    )
+              , $status	
+            );
+}
 
 }
