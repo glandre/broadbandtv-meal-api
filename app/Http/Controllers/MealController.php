@@ -69,7 +69,9 @@ class MealController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function getRecipe($id=0){
-        $response = ($id != 0) ? $this->recipe->with('recipeSteps', 'recipeFoods')->find($id) : $this->recipe->with('recipeSteps', 'recipeFoods')->get();
+        $response = ($id != 0) ? 
+                $this->recipe->with('recipeSteps', 'recipeFoods', 'recipeTags')->find($id) : 
+                $this->recipe->with('recipeSteps', 'recipeFoods', 'recipeTags')->get();
         return response()->json($response);
     }
 
