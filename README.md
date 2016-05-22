@@ -120,53 +120,58 @@ php artisan serve
 
 ###Recipe
 
-####Save a new recipe
+####Saving a new recipe
 - Address: http://domain:port/api/recipe
 - Method: POST
 - Return: JSON
 
-####Retrieving a saved recipe
-- Address: http://domain:port/api/meal/recipe/<recipe_id>
-- Method: GET
-- Return: JSON
-
-####Retrieving all recipes from a user
-- Address: http://domain:port/api/meal/user-recipes/<user_id>
-- Method: GET
-- Return: JSON
-
 ####Editing a saved recipe
-- Address: http://domain:port/api/meal/recipe/<recipe_id>
+- Address: http://domain:port/api/meal/recipe/\<recipe_id\>
 - Method: PUT
 - Return: JSON
 
 ####Deleting a saved recipe
-- Address: http://domain:port/api/meal/recipe/<recipe_id>
+- Address: http://domain:port/api/meal/recipe/\<recipe_id\>
 - Method: DELETE
+- Return: JSON
+
+####Retrieving a saved recipe
+- Address: http://domain:port/api/meal/recipe/\<recipe_id\>
+- Method: GET
+- Return: JSON
+
+####Retrieving all recipes from a user
+- Address: http://domain:port/api/meal/user-recipes/\<user_id\>
+- Method: GET
 - Return: JSON
 
 ___
 
 ###User
 
+####Saving a new user
+- Address: http://domain:port/api/meal/user
+- Method: POST
+- Return: JSON
+
 ####Editing a saved user
-- Address: http://domain:port/api/meal/user/<user_id>
+- Address: http://domain:port/api/meal/user/\<user_id\>
 - Method: PUT
 - Return: JSON
 
 ####Deleting a saved user
-- Address: http://domain:port/api/meal/recipe/<user_id>
+- Address: http://domain:port/api/meal/user/\<user_id\>
 - Method: DELETE
 - Return: JSON
 
 ####Retrieving a saved user
-- Address: http://domain:port/api/meal/recipe/<user_id>
+- Address: http://domain:port/api/meal/user/\<user_id\>
 - Method: GET
 - Return: JSON
 
-####Saving a new user
-- Address: http://domain:port/api/meal/user
-- Method: POST
+####Retrieving all saved users
+- Address: http://domain:port/api/meal/user/
+- Method: GET
 - Return: JSON
 
 ___
@@ -174,12 +179,12 @@ ___
 ###Food Search
 
 ####Retrieving a food name and its measures by its NDBNO
-- Address: http://domain:port/api/meal/food-ndbno/<food_id>
+- Address: http://domain:port/api/meal/food-ndbno/\<food_id\>
 - Method: GET
 - Return: JSON
 
 ####Retrieving a list of foods by its name
-- Address: http://domain:port/api/meal/food-name/<food_name>
+- Address: http://domain:port/api/meal/food-name/\<food_name\>
 - Method: GET
 - Return: JSON
 
@@ -193,6 +198,28 @@ ___
 - Return: JSON
 
 ####Retrieving a recipe nutritional information
-- Address: http://domain:port/api/meal/nutritional-information/<recipe_id>
+- Address: http://domain:port/api/meal/nutritional-information/\<recipe_id\>
 - Method: GET
 - Return: JSON
+
+##Error Response
+When a method finds an error during execution, it will return an Error Response.
+- success = [true|false]
+- general_message = returns a string showing the error description
+- errors = can show one or alist of errors
+
+```json
+{
+    success:false,
+    general_message:"You have reached your max number of Foos for the day",
+    errors: {
+        last_name:"This field is required",
+        mrn:"Either SSN or MRN must be entered",
+        zipcode:"996852 is not in Bernalillo county. Only Bernalillo residents are eligible"
+    }
+} 
+```
+##Troubleshooting
+###$HTTP_RAW_POST_DATA
+- Error message: 
+> Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set ‘always_populate_raw_post_data’ to ‘-1’ in php.ini and use the php://input stream instead. in Unknown on line 0
