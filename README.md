@@ -220,4 +220,6 @@ When a method finds an error during execution, it will return an Error Response.
 } 
 ```
 ##Troubleshooting
-
+###$HTTP_RAW_POST_DATA
+- Error message: 
+<Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set ‘always_populate_raw_post_data’ to ‘-1’ in php.ini and use the php://input stream instead. in Unknown on line 0>
