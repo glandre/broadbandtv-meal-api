@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Configuration;
 use App\Recipe;
 use App\RecipeFood;
+use App\User;
 
 class MealController extends Controller
 {
@@ -13,13 +14,15 @@ class MealController extends Controller
     private $recipe;
     private $recipeFood;
     private $configuration;
+    private $user;
 
-    public function __construct(Request $request, Recipe $recipe, RecipeFood $recipeFood, Configuration $configuration){
+    public function __construct(Request $request, Recipe $recipe, RecipeFood $recipeFood, Configuration $configuration, User $user){
         //Dependecy Injection
         $this->request = $request;
         $this->recipe = $recipe;
         $this->recipeFood = $recipeFood;
         $this->configuration = $configuration;
+        $this->user = $user;
     }
 
     /*
@@ -29,23 +32,25 @@ class MealController extends Controller
      * Implemented by: @glandre
      */
     public function postRecipe(){
-        
+        $status = 200;
         switch($this->contentType()) {
             case "application/json":
                 $request = $this->request->all();
                 
                 if(count($request) == 0) {
-                    app()->abort(501, 'Only JSON is supported');
+                    $status = 501;
+                    $response = array('error' => 501, 'message' => 'Only JSON is supported');
                     break;
                 }
                 
                 $response = $this->updateRecipe($request);
                 break;
             default:
-                app()->abort(501, 'Only JSON is supported');
+                $status = 501;
+                $response = array('error' => 501, 'message' => 'Only JSON is supported');
         }
         
-        return response()->json($response);
+        return response()->json($response, $status);
     }
 
     /*
@@ -55,7 +60,7 @@ class MealController extends Controller
      * Implemented by: @glandre
      */
     public function getRecipe($id=0){
-        $response = ($id != 0) ? $this->recipe->find($id) : $this->recipe->all();
+        $response = ($id != 0) ? $this->recipe->with('recipe_steps, recipe_tags')->find($id) : $this->recipe->with('recipe_steps, recipe_tags')->all();
         return response()->json($response);
     }
 
@@ -66,7 +71,7 @@ class MealController extends Controller
      * Implemented by: @glandre
      */
     public function getUserRecipes($user_id){
-        $response = $this->recipe->where('user_id', $user_id)->get();
+        $response = $this->user->with('recipes')->find($user_id);
         return response()->json($response);
     }
 
@@ -77,15 +82,17 @@ class MealController extends Controller
      * Implemented by: @glandre
      */
     public function putRecipe($id){
+        $status = 200;
         switch($this->contentType()) {
             case "application/json" :
                 $request = $this->request->all();
                 $response = $this->updateRecipe($request, $id);
                 break;
             default:
-                app()->abort(501, 'Only JSON is supported');
+                $status = 501;
+                $response = array('error' => 501, 'message' => 'Only JSON is supported');
         }
-        return response()->json($response);
+        return response()->json($response, $status);
     }
     
     /*
