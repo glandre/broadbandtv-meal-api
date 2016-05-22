@@ -34,7 +34,7 @@ Any related feature you think would be cool or useful.
 
 > Important: For the above tutorial, we are going to use MySQL Database.
 
-> Important: Be sure to create a new database before iniciate install process
+> Important: Be sure to create a new database before iniciate installation process
 
 ##How to Install
 Download the zip file and unzip it in your local machine.
