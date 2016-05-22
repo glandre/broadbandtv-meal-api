@@ -42,7 +42,7 @@ After unziping the content file, open command prompt</b>
 
 Access the API's source code directory
 ```
-cd broadbandtv-meal-api
+cd broadbandtv-meal-api-master
 ```
 
 Run composer to install and update all necessary depencencies (it may take some time, so be patient..)
@@ -60,7 +60,7 @@ You also have to generate a valid app key. The following command will do this to
 php artisan key:generate
 ```
 
-Using any text editor of your preference, edit file **/broadbandtv-meal-api/.env** according to your environment.
+Using any text editor of your preference, edit file **/broadbandtv-meal-api-master/.env** according to your environment.
 
 Close your text editor and go back to command prompt. At this point your application is well configured, but you need a few important information inside your database.
 ```
@@ -69,7 +69,7 @@ php artisan migrate --seed
 
 Excellent! It's all done. Now you can use your Web Server Application to run this API.
 
-You don't have any Web Server in your machine? No problem. Make sure you are inside **/broadbandtv-meal-api** directory and, using your command prompt, run the following command:
+You don't have any Web Server in your machine? No problem. Make sure you are inside **/broadbandtv-meal-api-master** directory and, using your command prompt, run the following command:
 ```
 php artisan serve
 ```
@@ -102,7 +102,7 @@ You also have to generate a valid app key. The following command will do this to
 php artisan key:generate
 ```
 
-Using any text editor of your preference, edit file **/broadbandtv-meal-api/.env** according to your environment.
+Using any text editor of your preference, edit file **/broadbandtv-meal-api-master/.env** according to your environment.
 
 Close your text editor and go back to command prompt. At this point your application is well configured, but you need a few important information inside your database.
 ```
@@ -111,7 +111,7 @@ php artisan migrate --seed
 
 Excellent! It's all done. Now you can use your Web Server Application to run this API.
 
-You don't have any Web Server in your machine? No problem. Make sure you are inside **/broadbandtv-meal-api** directory and run the following command:
+You don't have any Web Server in your machine? No problem. Make sure you are inside **/broadbandtv-meal-api-master** directory and run the following command:
 ```
 php artisan serve
 ```
