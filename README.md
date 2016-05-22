@@ -115,3 +115,70 @@ You don't have any Web Server in your machine? No problem. Make sure you are ins
 ```
 php artisan serve
 ```
+
+##Usage
+
+###Save a new recipe
+- Address: http://domain:port/api/recipe
+- Method: POST
+- Return: JSON
+
+###Retrieving a saved recipe
+- Address: /api/meal/recipe/<recipe_id>
+- Method: GET
+- Return: JSON
+
+###Retrieving all recipes from a user
+- Address: /api/meal/user-recipes/<user_id>
+- Method: GET
+- Return: JSON
+
+###Editing a saved recipe
+- Address: /api/meal/recipe/<recipe_id>
+- Method: PUT
+- Return: JSON
+
+###Editing a saved user
+- Address: /api/meal/user/<user_id>
+- Method: PUT
+- Return: JSON
+
+###Deleting a saved recipe
+- Address: /api/meal/recipe/<recipe_id>
+- Method: DELETE
+- Return: JSON
+
+###Deleting a saved user
+- Address: /api/meal/recipe/<user_id>
+- Method: DELETE
+- Return: JSON
+
+###Retrieving a saved user
+- Address: /api/meal/recipe/<user_id>
+- Method: GET
+- Return: JSON
+
+###Saving a new user
+- Address: /api/meal/user
+- Method: POST
+- Return: JSON
+
+###Retrieving a food name and its measures by its NDBNO
+- Address: /api/meal/food-ndbno/<food_id>
+- Method: GET
+- Return: JSON
+
+###Retrieving a list of foods by its name
+- Address: /api/meal/food-name/<food_name>
+- Method: GET
+- Return: JSON
+
+###Retrieving nutritional information of a list of foods
+- Address: /api/meal/nutritional-information/
+- Method: POST
+- Return: JSON
+
+###Retrieving a recipe nutritional information
+- Address: /api/meal/nutritional-information/<recipe_id>
+- Method: GET
+- Return: JSON
