@@ -130,24 +130,46 @@ php artisan serve
 - Return: JSON
 - Post Content: Content-Type = application/json
 ```php
-{
-"name" : "One Recipe with Two Valid Foods123",
-"user_id" : 3,
-"foods" : [
-{
-"ndbno" : "01005",
-"qty" : 2,
-"measure" : "cup, diced", 
-"name" : "First Food"
-},
-{
-"ndbno" : "01009",
-"qty" : 1,
-"measure" : "cup, melted",
-"name" : "Another ingredient"
-}
-]
-}
+{"recipe": {
+   "name" : "My test recipe",
+   "difficulty" : "easy",
+   "user_id" : 3,
+   "comments" : "just a test recipe",
+   "foods" : [
+       { 
+           "ndbno" : "43205",
+           "name" : "I don´t know",
+           "measure" :"tbsp",
+           "qty" :"4.87"
+       },
+       { 
+           "ndbno" : "05070",
+           "name" : "I don´t know too",
+           "measure" :"cup, chopped or diced",
+           "qty" :"2"
+       }
+   ],
+   "steps" : [
+       {
+           "number" : "1",
+           "description" : "mix them",
+           "time" : "00:01"
+       },
+       {
+           "number" : "2",
+           "description" : "eat",
+           "time" : "00:01"
+       }
+   ],
+   "tags" : [
+       {
+           "tag" : "just a a tag"
+       },
+       {
+           "tag" : "another tag"
+       }
+   ]
+}}
 ```
 
 ####Editing a saved recipe
