@@ -116,7 +116,7 @@ You don't have any Web Server in your machine? No problem. Make sure you are ins
 php artisan serve
 ```
 
-##Usage
+##Available API Routes
 
 ###Recipe
 
@@ -237,3 +237,5 @@ Configure your php.ini file as follows:
 ; http://php.net/always-populate-raw-post-data
 always_populate_raw_post_data = -1
 ```
+
+##Usage examples
