@@ -145,6 +145,8 @@ php artisan serve
 - Method: DELETE
 - Return: JSON
 
+___
+
 ###User
 
 ####Editing a saved user
@@ -167,7 +169,9 @@ php artisan serve
 - Method: POST
 - Return: JSON
 
-###Food
+___
+
+###Food Search
 
 ####Retrieving a food name and its measures by its NDBNO
 - Address: http://domain:port/api/meal/food-ndbno/<food_id>
@@ -178,6 +182,8 @@ php artisan serve
 - Address: http://domain:port/api/meal/food-name/<food_name>
 - Method: GET
 - Return: JSON
+
+___
 
 ###Calculating Nutritional Information
 
