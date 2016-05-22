@@ -202,7 +202,10 @@ ___
 - Return: JSON
 - Post Content: Content-Type = application/json
 ```php
-//
+{
+"name" : "new_user_name",
+"password" : "1234123412341234"
+}
 ```
 
 ####Editing a saved user
@@ -211,7 +214,10 @@ ___
 - Return: JSON
 - Post Content: Content-Type = application/json
 ```php
-//
+{
+"name" : "new_name_for_an_old_user",
+"password" : "newpassword"
+}
 ```
 
 ####Deleting a saved user
@@ -253,7 +259,23 @@ ___
 - Return: JSON
 - Post Content: Content-Type = application/json
 ```php
-//
+{
+  "recipe": {
+       "name": "My new recipe",
+       "foods": [
+            {
+                 "ndbno": "43205",
+                 "qty": "4.87",
+                 "measure": "tbsp"
+            },
+            {
+                 "ndbno": "05070",
+                 "qty": "1",
+                 "measure": "cup, chopped or diced"
+            }
+       ]
+    }
+}
 ```
 
 ####Retrieving a recipe nutritional information
@@ -261,9 +283,7 @@ ___
 - Method: GET
 - Return: JSON
 - Post Content: Content-Type = application/json
-```php
-//
-```
+
 
 ##Error Handling
 
