@@ -125,16 +125,6 @@ php artisan serve
 - Method: POST
 - Return: JSON
 
-####Retrieving a saved recipe
-- Address: http://domain:port/api/meal/recipe/\<recipe_id\>
-- Method: GET
-- Return: JSON
-
-####Retrieving all recipes from a user
-- Address: http://domain:port/api/meal/user-recipes/\<user_id\>
-- Method: GET
-- Return: JSON
-
 ####Editing a saved recipe
 - Address: http://domain:port/api/meal/recipe/\<recipe_id\>
 - Method: PUT
@@ -145,9 +135,24 @@ php artisan serve
 - Method: DELETE
 - Return: JSON
 
+####Retrieving a saved recipe
+- Address: http://domain:port/api/meal/recipe/\<recipe_id\>
+- Method: GET
+- Return: JSON
+
+####Retrieving all recipes from a user
+- Address: http://domain:port/api/meal/user-recipes/\<user_id\>
+- Method: GET
+- Return: JSON
+
 ___
 
 ###User
+
+####Saving a new user
+- Address: http://domain:port/api/meal/user
+- Method: POST
+- Return: JSON
 
 ####Editing a saved user
 - Address: http://domain:port/api/meal/user/\<user_id\>
@@ -155,18 +160,18 @@ ___
 - Return: JSON
 
 ####Deleting a saved user
-- Address: http://domain:port/api/meal/recipe/\<user_id\>
+- Address: http://domain:port/api/meal/user/\<user_id\>
 - Method: DELETE
 - Return: JSON
 
 ####Retrieving a saved user
-- Address: http://domain:port/api/meal/recipe/\<user_id\>
+- Address: http://domain:port/api/meal/user/\<user_id\>
 - Method: GET
 - Return: JSON
 
-####Saving a new user
-- Address: http://domain:port/api/meal/user
-- Method: POST
+####Retrieving all saved users
+- Address: http://domain:port/api/meal/user/
+- Method: GET
 - Return: JSON
 
 ___
