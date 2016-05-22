@@ -7,23 +7,26 @@ use App\Configuration;
 use App\Recipe;
 use App\RecipeFood;
 use App\User;
-use App\RecipeStep; //@rgbatistella
+use App\RecipeStep; 
+use App\RecipeTag; 
 
 class MealController extends Controller
 {
     private $request;
     private $recipe;
     private $recipeFood;
-    private $recipeStep; //@rgbatistella
+    private $recipeStep; 
+    private $recipeTag; 
     private $configuration;
     private $user;
 
-    public function __construct(Request $request, Recipe $recipe, RecipeFood $recipeFood, RecipeStep $recipeStep, Configuration $configuration, User $user){
+    public function __construct(Request $request, Recipe $recipe, RecipeFood $recipeFood, RecipeStep $recipeStep, RecipeTag $recipeTag, Configuration $configuration, User $user){
         //Dependecy Injection
         $this->request = $request;
         $this->recipe = $recipe;
         $this->recipeFood = $recipeFood;
-        $this->recipeStep = $recipeStep; //@rgbatistella
+        $this->recipeStep = $recipeStep; 
+        $this->recipeTag = $recipeTag; 
         $this->configuration = $configuration;
         $this->user = $user;
     }
@@ -121,7 +124,7 @@ class MealController extends Controller
      */
     private function updateRecipe($request, $id = 0) {
         
-        list($editingRecipe, $foods, $invalid, $steps, $invalidSteps) = $this->bindRecipeData($request, $id);
+        list($editingRecipe, $foods, $invalid, $steps, $invalidSteps, $tags, $invalidTags) = $this->bindRecipeData($request, $id);
         
         $message = "Could not save recipe";
         if(count($foods)) {
@@ -130,13 +133,17 @@ class MealController extends Controller
 				$editingRecipe->recipeFoods()->delete();
                 $editingRecipe->recipeFoods()->saveMany($foods);
 
-				//@rgbatistella
 				if(count($steps)) {
 					$editingRecipe->recipeSteps()->delete();
 					$editingRecipe->recipeSteps()->saveMany($steps);
 				}
+
+				if(count($tags)) {
+					$editingRecipe->recipeTags()->delete();
+					$editingRecipe->recipeTags()->saveMany($tags);
+				}
 				
-                $message = (count($invalid) > 0)||(count($invalidSteps) > 0) ? "Some data are not valid" : "Saved successfully";
+                $message = (count($invalid) > 0)||(count($invalidSteps) > 0)||(count($invalidTags) > 0) ? "Some data are not valid" : "Saved successfully";
             }
 			
 
@@ -153,7 +160,9 @@ class MealController extends Controller
             'saved_foods' => $foods,
             'invalid_foods' => $invalid,
             'saved_steps' => $steps,
-            'invalid_foods' => $invalidSteps
+            'invalid_steps' => $invalidSteps,
+            'saved_tags' => $tags,
+            'invalid_tags' => $invalidTags
         );
         
     }
@@ -453,11 +462,13 @@ class MealController extends Controller
         $this->recipe->bind($request, $editingRecipe);
         $foodsToSave = array();
 		
-		$stepsToSave = array(); //@rgbatistella
+		$stepsToSave = array(); 
+		$tagsToSave = array(); 
 		
         $invalid = array();
         
-        $invalidSteps = array(); //@rgbatistella
+        $invalidSteps = array(); 
+        $invalidTags = array(); 
 
         if($editingRecipe->validate()) {
             // bind each food by request
@@ -472,19 +483,33 @@ class MealController extends Controller
             }
 			
             // @rgbatistella: bind each step by request
-            foreach($request['steps'] as $recipeStep) {                    
-                $recipeStep = $this->recipeStep->bind($recipeStep);
-                if($recipeStep->validate()) {
-                    $stepsToSave[] = $recipeStep;
-                }
-                else {
-                    $invalidSteps[] = $recipeStep;
-                }
-            }
-			
+			if (isset($request['steps'])) {
+				foreach($request['steps'] as $recipeStep) {                    
+					$recipeStep = $this->recipeStep->bind($recipeStep);
+					if($recipeStep->validate()) {
+						$stepsToSave[] = $recipeStep;
+					}
+					else {
+						$invalidSteps[] = $recipeStep;
+					}
+				}
+			}
+
+            // @rgbatistella: bind each tag by request
+			if (isset($request['tags'])) {
+				foreach($request['tags'] as $recipeTag) {                    
+					$recipeTag = $this->recipeTag->bind($recipeTag);
+					if($recipeTag->validate()) {
+						$tagsToSave[] = $recipeTag;
+					}
+					else {
+						$invalidTags[] = $recipeTag;
+					}
+				}
+			}
         }
         
-        return array($editingRecipe, $foodsToSave, $invalid, $stepsToSave, $invalidSteps); //@rgbatistella: added steps
+        return array($editingRecipe, $foodsToSave, $invalid, $stepsToSave, $invalidSteps, $tagsToSave, $invalidTags); 
         
     }
 
