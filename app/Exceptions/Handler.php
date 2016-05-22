@@ -65,7 +65,9 @@ class Handler extends ExceptionHandler
             'error' => [
                 'code' => $e->getCode(),
                 'message' => $e->getMessage(),
-                'exception'=> get_class($e)					
+                'exception'=> get_class($e),
+				'stackTrace'=>$e->getTrace(),
+				
             ],
         ];
 		 	 

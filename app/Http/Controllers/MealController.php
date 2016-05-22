@@ -71,7 +71,7 @@ class MealController extends Controller {
 
                 $response = $this->updateRecipe($request,$errors);
 				if (!$response['success']) {
-					$errors[] = $response['errors'=>'message'];
+					$errors[] = ['errors'=>$response['message']];
 				}
                 break;
 
@@ -131,7 +131,7 @@ class MealController extends Controller {
                 $request = $this->request->all();
                 $response = $this->updateRecipe($request, $id);
 				if (!$response['success']) {
-					$errors[] = $response['errors'=>'message'];
+					$errors[] = ['errors'=>$response['message']];
 				}
                 break;
             default:
@@ -259,7 +259,7 @@ class MealController extends Controller {
             'saved_steps' => $steps,
             'invalid_steps' => $invalidSteps,
             'saved_tags' => $tags,
-            'invalid_tags' => $invalidTags
+            'invalid_tags' => $invalidTags,
 			'success' => $success 
         );
     }
