@@ -95,7 +95,7 @@ class MealController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function getRecipe($id = 0) {
-        $response = (intval($id) != 0) ?
+        $response = (is_numeric($id) && intval($id) != 0) ?
                 $this->recipe->with('recipeSteps', 'recipeFoods', 'recipeTags')->find($id) :
                 $this->recipe->with('recipeSteps', 'recipeFoods', 'recipeTags')->get();
         return response()->json($response);
@@ -312,7 +312,7 @@ class MealController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function getUser($id = 0) {
-        $response = (intval($id) != 0) ? $this->user->find($id) : $this->user->all();
+        $response = (is_numeric($id) && intval($id) != 0) ? $this->user->find($id) : $this->user->all();
         return response()->json($response);
     }
 
@@ -577,7 +577,8 @@ class MealController extends Controller {
     public function postNutritionalInformation() {
         $status = 200;
         $success = true;
-
+        $errors = array();
+        
         switch ($this->contentType()) {
             case "application/json":
                 $array = $this->request->all();
