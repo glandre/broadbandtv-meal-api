@@ -367,6 +367,8 @@ class MealController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function getFoodNdbno($ndbno) {
+		$success = true;
+		$status = 200;
         //setting variable
         $usda_url = $this->configuration->find('USDA_REPORT_URL');
 
@@ -389,10 +391,12 @@ class MealController extends Controller {
         if (isset($array["errors"])){
 
         $error[] = array('code' => '404',
-                                                     'headers' => 'Food name invalid or not found');
+                         'headers' => 'Food name invalid or not found'
+						 );
 
-        $response[] = responseMsgJson(false,"USDA API didn't find any result",$error, 400);
-
+        $response = "USDA API didn't find any result";
+		$status = 400;
+		$success = false;
         } else{
 
             foreach ($array["report"]->food->nutrients as $nutrient) {
@@ -405,7 +409,8 @@ class MealController extends Controller {
             }
 
         }
-        return response()->json($response);
+        return $this->responseMsgJson($success,$response,$error, $status);
+//        return response()->json($response);
     }
 
     /**
@@ -450,6 +455,8 @@ class MealController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function getFoodName($name) {
+		$success = true;
+		$status = 200;
         //setting variable
         $usda_url = $this->configuration->find('USDA_SEARCH_URL');
         $format = $this->configuration->find('PREFERRED_FORMAT');
@@ -475,7 +482,9 @@ class MealController extends Controller {
             $error[] = array('code' => '404',
                             'headers' => 'Food name invalid or not found');
 			
-            $response[] = responseMsgJson(false,"USDA API didn't find any result",$error);
+			$response = "USDA API didn't find any result";
+			$status = 400;
+			$success = false;
 
         } else{
 			
@@ -486,7 +495,8 @@ class MealController extends Controller {
                 );
             }
                 }
-        return response()->json($response);
+        return $this->responseMsgJson($success,$response,$error, $status);
+//        return response()->json($response);
     }
 
     /**
