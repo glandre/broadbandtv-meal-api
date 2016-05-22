@@ -19,3 +19,16 @@ The goal of this challenge is to build a small RESTful API allowing users to sav
 Deliver your submission in a .zip file, with instructions on how to run & use it in a README file. Make sure it can be run as easily as possible.
 Bonus
 Any related feature you think would be cool or useful.
+
+#Instructions
+
+Information
+BroadbandTV-Meal-API
+RESTfull JSON API
+Version 1.0.0.0
+
+Requistes
+PHP5.6 or higher
+
+How to Install
+Download the zip file and unzip it in your local machine.
