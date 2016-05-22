@@ -126,22 +126,22 @@ php artisan serve
 - Return: JSON
 
 ####Retrieving a saved recipe
-- Address: http://domain:port/api/meal/recipe/<recipe_id>
+- Address: http://domain:port/api/meal/recipe/\<recipe_id\>
 - Method: GET
 - Return: JSON
 
 ####Retrieving all recipes from a user
-- Address: http://domain:port/api/meal/user-recipes/<user_id>
+- Address: http://domain:port/api/meal/user-recipes/\<user_id\>
 - Method: GET
 - Return: JSON
 
 ####Editing a saved recipe
-- Address: http://domain:port/api/meal/recipe/<recipe_id>
+- Address: http://domain:port/api/meal/recipe/\<recipe_id\>
 - Method: PUT
 - Return: JSON
 
 ####Deleting a saved recipe
-- Address: http://domain:port/api/meal/recipe/<recipe_id>
+- Address: http://domain:port/api/meal/recipe/\<recipe_id\>
 - Method: DELETE
 - Return: JSON
 
@@ -150,17 +150,17 @@ ___
 ###User
 
 ####Editing a saved user
-- Address: http://domain:port/api/meal/user/<user_id>
+- Address: http://domain:port/api/meal/user/\<user_id\>
 - Method: PUT
 - Return: JSON
 
 ####Deleting a saved user
-- Address: http://domain:port/api/meal/recipe/<user_id>
+- Address: http://domain:port/api/meal/recipe/\<user_id\>
 - Method: DELETE
 - Return: JSON
 
 ####Retrieving a saved user
-- Address: http://domain:port/api/meal/recipe/<user_id>
+- Address: http://domain:port/api/meal/recipe/\<user_id\>
 - Method: GET
 - Return: JSON
 
@@ -174,12 +174,12 @@ ___
 ###Food Search
 
 ####Retrieving a food name and its measures by its NDBNO
-- Address: http://domain:port/api/meal/food-ndbno/<food_id>
+- Address: http://domain:port/api/meal/food-ndbno/\<food_id\>
 - Method: GET
 - Return: JSON
 
 ####Retrieving a list of foods by its name
-- Address: http://domain:port/api/meal/food-name/<food_name>
+- Address: http://domain:port/api/meal/food-name/\<food_name\>
 - Method: GET
 - Return: JSON
 
@@ -193,6 +193,6 @@ ___
 - Return: JSON
 
 ####Retrieving a recipe nutritional information
-- Address: http://domain:port/api/meal/nutritional-information/<recipe_id>
+- Address: http://domain:port/api/meal/nutritional-information/\<recipe_id\>
 - Method: GET
 - Return: JSON
