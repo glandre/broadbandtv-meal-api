@@ -347,3 +347,6 @@ Configure your php.ini file as follows:
 ; http://php.net/always-populate-raw-post-data
 always_populate_raw_post_data = -1
 ```
+
+##Technical Documentation
+There is also a technical documentation [here](https://github.com/glandre/broadbandtv-meal-api/tree/master/api).
