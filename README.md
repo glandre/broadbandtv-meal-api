@@ -30,7 +30,7 @@ Any related feature you think would be cool or useful.
 ##Requirements
 - PHP5.6 or higher
 - Composer
-- SQL Database (MySQL is preferred, but you can use any PDO possibility)
+- SQL Database (MySQL is preferred, but you can use any PDO's possibility)
 
 Important: For the above tutorial, we are going to use MySQL Database
 
@@ -124,11 +124,19 @@ php artisan serve
 - Address: http://domain:port/api/recipe
 - Method: POST
 - Return: JSON
+- Post Content:
+```php
+//
+```
 
 ####Editing a saved recipe
 - Address: http://domain:port/api/meal/recipe/\<recipe_id\>
 - Method: PUT
 - Return: JSON
+- Post Content:
+```php
+//
+```
 
 ####Deleting a saved recipe
 - Address: http://domain:port/api/meal/recipe/\<recipe_id\>
@@ -153,11 +161,19 @@ ___
 - Address: http://domain:port/api/meal/user
 - Method: POST
 - Return: JSON
+- Post Content:
+```php
+//
+```
 
 ####Editing a saved user
 - Address: http://domain:port/api/meal/user/\<user_id\>
 - Method: PUT
 - Return: JSON
+- Post Content:
+```php
+//
+```
 
 ####Deleting a saved user
 - Address: http://domain:port/api/meal/user/\<user_id\>
@@ -196,11 +212,19 @@ ___
 - Address: http://domain:port/api/meal/nutritional-information/
 - Method: POST
 - Return: JSON
+- Post Content:
+```php
+//
+```
 
 ####Retrieving a recipe nutritional information
 - Address: http://domain:port/api/meal/nutritional-information/\<recipe_id\>
 - Method: GET
 - Return: JSON
+- Post Content:
+```php
+//
+```
 
 ##Error Response
 When a method finds an error during execution, it will return an Error Response.
@@ -227,7 +251,7 @@ Depending on the PHP version, it could happen during POST requests.
 
 > Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set ‘always_populate_raw_post_data’ to ‘-1’ in php.ini and use the php://input stream instead. in Unknown on line 0
 
-- How to solve:
+- How to solve it:
 Configure your php.ini file as follows:
 ```
 ; Always populate the $HTTP_RAW_POST_DATA variable. PHP's default behavior is
@@ -237,5 +261,3 @@ Configure your php.ini file as follows:
 ; http://php.net/always-populate-raw-post-data
 always_populate_raw_post_data = -1
 ```
-
-##Usage examples
