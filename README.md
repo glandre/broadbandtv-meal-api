@@ -267,6 +267,9 @@ ___
 
 ##Error and Logging Handling
 
+###Enabling/Disabling Stack Trace Messages
+All database errors or application dumps are returned in the JSON response. If the APP_DEBUG environment configuration in ,env is set as false the stack trace is not returned, if set to true it is returned
+
 ###Default Error Response
 When a method finds an error during execution, it will return an Error Response.
 - success = [true|false]
