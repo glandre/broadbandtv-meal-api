@@ -369,12 +369,13 @@ class MealController extends Controller {
     public function getFoodNdbno($ndbno) {
         //setting variable
         $usda_url = $this->configuration->find('USDA_REPORT_URL');
+
         $format = $this->configuration->find('PREFERRED_FORMAT');
         $api_key = $this->configuration->find("USDA-API-KEY")->value;
 
         //building url
         $url = $usda_url . "?ndbno=" . $ndbno . "&type=f&format=" . $format . "&api_key= " . $api_key;
-		
+
         //Setting array with USDA API result
         $array = $this->curlJsonUrlToArray($url);
 
