@@ -216,24 +216,29 @@ class MealController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function getFoodNdbno($ndbno) {
-
+		//setting variable
         $usda_url = $this->configuration->find('USDA_REPORT_URL');
         $format = $this->configuration->find('PREFERRED_FORMAT');
         $api_key = $this->configuration->find("USDA-API-KEY")->value;
 
+		//building url
         $url = $usda_url . "?ndbno=" . $ndbno . "&type=f&format=" . $format . "&api_key= " . $api_key;
-
+		
+		//Setting array with USDA API result
         $array = $this->curlJsonUrlToArray($url);
 
+        //Setting Arrays
         $response = array();
+		$error = array();
 
         if (isset($array["errors"])){
 
-            $response[] = array(
-                "erro" => "Invalid food ID."
-            );
+            $error[] = array('code' => '404',
+							 'headers' => 'Food name invalid or not found');
+			
+            $response[] = responseMsgJson(false,"USDA API don't found any result",$error);
 
-                } else{
+        } else{
 
             foreach ($array["report"]->food->nutrients as $nutrient) {
                 $response[] = array(
@@ -244,7 +249,7 @@ class MealController extends Controller {
                 );
             }
 
-                }
+        }
         return response()->json($response);
     }
 
@@ -290,24 +295,35 @@ class MealController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function getFoodName($name) {
+		//setting variable
         $usda_url = $this->configuration->find('USDA_SEARCH_URL');
         $format = $this->configuration->find('PREFERRED_FORMAT');
         $api_key = $this->configuration->find("USDA-API-KEY")->value;
+		
+		//Chaging $name format to USDA API format
+		$name = trim($name);
+		$name = str_replace(" ",",",$name);
 
+		//building url
         $url = $usda_url . "?format=" . $format . "&q=" . $name . "&sort=n&max=100&offset=0&api_key=" . $api_key . "";
-
+		
+		//Setting array with USDA API result
         $array = $this->curlJsonUrlToArray($url);
 
+		//Setting Arrays
         $response = array();
-
+		$error = array();
+		
+		//Checking if have some error
         if (isset($array["errors"])){
+			
+			$error[] = array('code' => '404',
+							 'headers' => 'Food name invalid or not found');
+			
+            $response[] = responseMsgJson(false,"USDA API don't found any result",$error);
 
-            $response[] = array(
-                "erro" => "Invalid food name."
-            );
-
-                } else{
-
+        } else{
+			
             foreach ($array["list"]->item as $food) {
                 $response[] = array(
                     "ndbno" => $food->ndbno,
