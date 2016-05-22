@@ -50,7 +50,7 @@ Run composer to install and update all necessary depencencies (it may take some 
 composer update
 ```
 
-Now, that you have everything you need to run this API, your mut configure it.
+Now, that you have everything you need to run this API, you must configure it.
 ```
 copy .env.example .env
 ```
@@ -62,5 +62,15 @@ php artisan key:generate
 
 Using any text editor of your preference, edit file **/broadbandtv-meal-api/.env** according to your environment.
 
+Close your text editor and go back to command prompt. At this point your application is well configured, but you need a few important information inside your database.
+```
+php artisan migrate --seed
+```
 
+Excellent! It's all done. Now you can use your Web Server Application to run this API.
+
+You don't have any Web Server in your machine? No problem. Make sure you are inside **/broadbandtv-meal-api** directory and, using your command prompt, run the following command:
+```
+php artisan serve
+```
 
