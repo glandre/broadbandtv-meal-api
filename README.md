@@ -124,11 +124,19 @@ php artisan serve
 - Address: http://domain:port/api/recipe
 - Method: POST
 - Return: JSON
+- Post Content:
+```php
+//
+```
 
 ####Editing a saved recipe
 - Address: http://domain:port/api/meal/recipe/\<recipe_id\>
 - Method: PUT
 - Return: JSON
+- Post Content:
+```php
+//
+```
 
 ####Deleting a saved recipe
 - Address: http://domain:port/api/meal/recipe/\<recipe_id\>
@@ -153,11 +161,19 @@ ___
 - Address: http://domain:port/api/meal/user
 - Method: POST
 - Return: JSON
+- Post Content:
+```php
+//
+```
 
 ####Editing a saved user
 - Address: http://domain:port/api/meal/user/\<user_id\>
 - Method: PUT
 - Return: JSON
+- Post Content:
+```php
+//
+```
 
 ####Deleting a saved user
 - Address: http://domain:port/api/meal/user/\<user_id\>
@@ -196,11 +212,19 @@ ___
 - Address: http://domain:port/api/meal/nutritional-information/
 - Method: POST
 - Return: JSON
+- Post Content:
+```php
+//
+```
 
 ####Retrieving a recipe nutritional information
 - Address: http://domain:port/api/meal/nutritional-information/\<recipe_id\>
 - Method: GET
 - Return: JSON
+- Post Content:
+```php
+//
+```
 
 ##Error Response
 When a method finds an error during execution, it will return an Error Response.
@@ -237,5 +261,3 @@ Configure your php.ini file as follows:
 ; http://php.net/always-populate-raw-post-data
 always_populate_raw_post_data = -1
 ```
-
-##Usage examples
