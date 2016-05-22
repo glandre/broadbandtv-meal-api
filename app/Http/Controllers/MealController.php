@@ -244,7 +244,16 @@ class MealController extends Controller {
      * @return array with the following fields: message, user
      */
     private function updateUser($request, $id = 0) {
+        
+        if($id == 0) {
+            $editingUser = new User;
+            $editingUser->api_key = str_random(60);
+        }
+        
         $editingUser = ($id == 0) ? new User : $this->user->findOrFail($id);
+        
+        
+        
         $this->user->bind($request, $editingUser);
         
         $message = "Could not save user";
