@@ -9,7 +9,15 @@ class Recipe extends Model {
     public function recipeFoods() {
         return $this->hasMany('App\RecipeFood');
     }
+	
+    public function recipeSteps() {
+        return $this->hasMany('App\RecipeStep');
+    }
 
+    public function recipeTags() {
+        return $this->hasMany('App\RecipeTag');
+    }
+	
     public function user() {
         return $this->belongsTo('App\User');
     }
@@ -22,11 +30,9 @@ class Recipe extends Model {
         if(is_null($recipe)) {
             $recipe = new Recipe;
         }
-        
         if (array_key_exists('name', $request)) {
             $recipe->name = $request['name'];
         }
-        
         if (array_key_exists('user_id', $request)) {
             $recipe->user_id = $request['user_id'];
         }
@@ -38,7 +44,7 @@ class Recipe extends Model {
         if (array_key_exists('comments', $request)) {
             $recipe->comments = $request['comments'];
         }
-
+		
         return $recipe;
     }
 
