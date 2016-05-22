@@ -221,5 +221,19 @@ When a method finds an error during execution, it will return an Error Response.
 ```
 ##Troubleshooting
 ###$HTTP_RAW_POST_DATA
-- Error message: 
+Depending on the PHP version, it could happen during POST requests.
+
+- Error message:
+
 > Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set ‘always_populate_raw_post_data’ to ‘-1’ in php.ini and use the php://input stream instead. in Unknown on line 0
+
+- How to solve:
+Configure your php.ini file as follows:
+```
+; Always populate the $HTTP_RAW_POST_DATA variable. PHP's default behavior is
+; to disable this feature and it will be removed in a future version.
+; If post reading is disabled through enable_post_data_reading,
+; $HTTP_RAW_POST_DATA is *NOT* populated.
+; http://php.net/always-populate-raw-post-data
+always_populate_raw_post_data = -1
+```
