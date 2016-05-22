@@ -660,6 +660,7 @@ class MealController extends Controller {
      * @param $success
      * @param $generalMessage
      * @param $errors
+     * @author Bruno Henrique <bruno@lohl.com.br>
      * @return \Illuminate\Http\JsonResponse
      */
     private function responseMsgJson($success, $generalMessage, $errors){
