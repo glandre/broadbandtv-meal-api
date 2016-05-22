@@ -54,8 +54,8 @@ class MealController extends Controller
      * Method: GET
      * Implemented by: @glandre
      */
-    public function getRecipe($id){
-        $response = $this->recipe->find($id);
+    public function getRecipe($id=0){
+        $response = ($id != 0) ? $this->recipe->find($id) : $this->recipe->all();
         return response()->json($response);
     }
 
