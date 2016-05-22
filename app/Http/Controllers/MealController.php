@@ -13,6 +13,7 @@ class MealController extends Controller
     private $recipe;
     private $recipeFood;
     private $configuration;
+    private $app;
 
     public function __construct(Request $request, Recipe $recipe, RecipeFood $recipeFood, Configuration $configuration){
         //Dependecy Injection
@@ -29,8 +30,25 @@ class MealController extends Controller
      * Implemented by: @glandre
      */
     public function postRecipe(){
-        $request = $this->request->all();
-        $response = $this->updateRecipe($request);
+        
+        switch($this->contentType()) {
+            case "application/json":
+                $request = $this->request->all();
+                
+                if(count($request) == 0) {
+//                    $this->app->abort(501, 'Only JSON is supported');
+                    \App::abort(501, 'Only JSON is supported');
+                    break;
+                }
+                
+                $response = $request;
+//                $response = $this->updateRecipe($request);
+                break;
+            default:
+//                $this->app->abort(501, 'Only JSON is supported');
+                \App::abort(501, 'Only JSON is supported');
+        }
+        
         return response()->json($response);
     }
 
@@ -52,8 +70,15 @@ class MealController extends Controller
      * Implemented by: @glandre
      */
     public function putRecipe($id){
-        $request = $this->request->all();
-        $response = $this->updateRecipe($request, $id);
+        switch($this->contentType()) {
+            case "application/json" :
+                $request = $this->request->all();
+                $response = $this->updateRecipe($request, $id);
+                break;
+            default:
+//                $this->app->abort(501, 'Only JSON is supported');
+                \App::abort(501, 'Only JSON is supported');
+        }
         return response()->json($response);
     }
     
@@ -108,20 +133,22 @@ class MealController extends Controller
      * Function: Retrieving a food by its NDBNO
      * Address: /api/meal/food-ndbno/1234
      * Method: GET
-     * Implemented by: @rossini
+     * Implemented by:
      */
     public function getFoodNdbno($ndbno){
         $api_key = $this->configuration->find("USDA-API-KEY")->value;
-        $url = "http://api.nal.usda.gov/ndb/reports/?ndbno={$ndbno}&type=f&format=json&api_key={$api_key}";
+        
+        $url = "http://api.nal.usda.gov/ndb/reports/?ndbno=".$ndbno."&type=f&format=json&api_key=".$api_key."";
         $array = $this->curlJsonUrlToArray($url);
         $response = array();
+
         foreach($array["report"]->food->nutrients as $nutrient){
-            $response[] = array(
-                "name"=>$nutrient->name,
-                "unit"=>$nutrient->unit,
-                "value"=>$nutrient->value,
-                "measure"=>$nutrient->measures
-            );
+
+            $response[] = array("name"=>$nutrient->name,
+									  "unit"=>$nutrient->unit,
+									  "value"=>$nutrient->value,
+									  "measure"=>$nutrient->measures);
+
         }
         return response()->json($response);
     }
@@ -133,8 +160,10 @@ class MealController extends Controller
      * Implemented by: @rossini
      */
     public function getFoodName($name){
-        $api_key = Configuration::find("USDA-API-KEY")->value;
-        $url = "http://api.nal.usda.gov/ndb/search/?format=json&q={$name}&sort=n&max=100&offset=0&api_key={$api_key}";
+        
+        $api_key = $this->configuration->find("USDA-API-KEY")->value;
+        
+        $url = "http://api.nal.usda.gov/ndb/search/?format=json&q=".$name."&sort=n&max=100&offset=0&api_key=".$api_key."";
         $array = $this->curlJsonUrlToArray($url);
         $response = array();
         foreach($array["list"]->item as $food){
@@ -405,4 +434,17 @@ class MealController extends Controller
         $response = $this->request->all();
         return response()->json($response);
     }
+
+    /*
+     * Function: Returns request's content-type (JSON is default)
+     * Implemented by: @glandre
+     */
+    private function contentType() {
+        $cType = $this->request->header('Content-Type');
+        if(strlen($cType) == 0 || $cType == "text/plain;charset=UTF-8") {
+            $cType = "application/json";
+        }
+        return $cType;
+    }
+
 }
