@@ -215,7 +215,7 @@ class MealController extends Controller
 //        $array = $array['report'];
 //        dd($array->food->nutrients[0]->measures);
 
-        $recipe_foods = $this->recipeFood->select('nbno', 'qty', 'measure')->where('recipe_id', $id)->get();
+        $recipe_foods = $this->recipeFood->select('ndbno', 'qty', 'measure')->where('recipe_id', $id)->get();
 
 		$response = $recipe_foods;
         return response()->json($response);
