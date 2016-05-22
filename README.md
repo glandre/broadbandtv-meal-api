@@ -121,12 +121,33 @@ php artisan serve
 ###Recipe
 
 ####Saving a new recipe
-- Address: http://domain:port/api/recipe
+- Address: http://domain:port/api/meal/recipe
 - Method: POST
 - Return: JSON
 - Post Content:
 ```php
-//
+{
+"name" : "One Recipe with Two Valid Foods123",
+"user_id" : 3,
+"foods" : [
+{
+"ndbno" : "01005",
+"qty" : 2,
+"measure" : "cup, diced", 
+"name" : "First Food"
+},
+{
+"ndbno" : "01009",
+"qty" : 1,
+"measure" : "cup, melted",
+"name" : "Another ingredient"
+}
+],
+"auth" : {
+       "name" : "ilya",
+       "password" : "rOuUb06Qp0EEv1jH1toQbUbHeXL4AFZHLfO184rt8CVW3jWCQdQoFn4ADTl6"
+}
+}
 ```
 
 ####Editing a saved recipe
