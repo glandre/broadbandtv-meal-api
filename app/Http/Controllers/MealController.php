@@ -209,82 +209,9 @@ class MealController extends Controller
 		
      */
     public function postNutritionalInformation(){
-		$foodlist = $this->request->all();
-		$response = array();
-		// start a dummy value on summary to facilitate search
-		$summary = [['nutrient_id'=>'-1']];
-		// loop through food list from recipe
-        foreach ($foodlist['recipe']['foods'] as $food) {
-			// calls usda api
-			$api_key = Configuration::find("USDA-API-KEY")->value;
-			$url = "http://api.nal.usda.gov/ndb/reports/?ndbno=".$food['ndbno']."&type=f&format=json&api_key=".$api_key; 
-			$ch = curl_init(); 
-			curl_setopt($ch, CURLOPT_URL, $url); 
-			curl_setopt($ch, CURLOPT_HEADER, false);  // don't return headers
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			$res = curl_exec($ch); 
-			$err = curl_error($ch);
-            curl_close($ch);			
-				
-			$nut = array();
-			$resp = array();
-			$resp = json_decode($res,true);
-
-			if ($err) {
-				$response[] = ['error', $err];
-			} else {			
-				$nut = array();					
-				// loop through nutrients
-                foreach ($resp['report']['food']['nutrients'] as $nutrient) {
-					// loop through nutrient´s units of measure
-					foreach($nutrient['measures'] as $measure) { 
-						// if label matches unit of measure from recipe
-						if ($measure['label'] == $food['measure']) { 
-                            // store nutrient information for this food             						
-							$nut[] = [  'nutrient_id'    => $nutrient['nutrient_id']
-								      , 'nutrient_group' => $nutrient['group']
-								      , 'nutrient_name'  => $nutrient['name']
-								      , 'nutrient_unit'  => $nutrient['unit']
-								      , 'measure_value'  => $measure['value'] 
-								      , 'measure_label'  => $measure['label']
-									 ];
-														
-							// search for nutrient_id
-							$key = (int)array_search($nutrient['nutrient_id'], array_column($summary, 'nutrient_id'), true);							
-							// if not found on sumary
-							if ($key == 0) {
-								// add to summary
-								$summary[] = ['nutrient_id' => $nutrient['nutrient_id']
-								   , 'group'  => $nutrient['group']
-								   , 'name' => $nutrient['name']
-								   , 'unit' => $nutrient['unit']
-								   , 'value' => $measure['value'] * $food['qty']
-									  ];
-							}
-							else {							
-							    // sum qty							
-								$summary[$key]['value'] += $measure['value'];
-							}
-						}
-					}		
-                }							
-			}
-			
-			// adds food information to the summary
-			$response[] = [   'food_ndbno' => $food['ndbno']
-							, 'food_qty'  =>   $food['qty']
-							, 'food_measure' => $food['measure']
-							, 'food_nutrients' => $nut					
-						]; 
-		}
-		
-		// removes dummy first position	
-		array_shift($summary);
-
-		// response is an array of foods along with their nutritrients and nutrients summary
-		$response = array('foods' => $response, 'sumary' => $summary);
-			
-		// returns response
+		$array = $this->request->all();
+        $json = json_encode($array);
+        $response = $this->calculate($json);
         return response()->json($response);
     }
 
@@ -295,15 +222,100 @@ class MealController extends Controller
      * Implemented by: @brunolohl
      */
     public function getNutritionalInformation($id){
-//        $url = 'http://api.nal.usda.gov/ndb/reports/?ndbno=43205&type=f&format=json&api_key=BaKxZk2ziMCjeBGPJLlN8vw3VLmf2ypZbA6InZik';
-//        $array = $this->curlJsonUrlToArray($url);
-//        $array = $array['report'];
-//        dd($array->food->nutrients[0]->measures);
-
         $recipe_foods = $this->recipeFood->select('ndbno', 'qty', 'measure')->where('recipe_id', $id)->get();
-
-		$response = $recipe_foods;
+        $array = array(
+            'recipe' => array(
+                'foods' => $recipe_foods,
+            ),
+        );
+        $json = json_encode($array);
+        $response = $this->calculate($json);
         return response()->json($response);
+    }
+
+    /*
+     * Function: Calculates the nutritional information of a list of foods
+     * Implemented by: @rgbatistella
+	 * message format : json
+     */
+    private function calculate($foodlist){
+        $foodlist = json_decode($foodlist,true);
+        $response = array();
+        // start a dummy value on summary to facilitate search
+        $summary = [['nutrient_id'=>'-1']];
+        // loop through food list from recipe
+        foreach ($foodlist['recipe']['foods'] as $food) {
+            // calls usda api
+            $api_key = Configuration::find("USDA-API-KEY")->value;
+            $url = "http://api.nal.usda.gov/ndb/reports/?ndbno=".$food['ndbno']."&type=f&format=json&api_key=".$api_key;
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_HEADER, false);  // don't return headers
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $res = curl_exec($ch);
+            $err = curl_error($ch);
+            curl_close($ch);
+
+            $nut = array();
+//            $resp = array();
+            $resp = json_decode($res,true);
+
+            if ($err) {
+                $response[] = ['error', $err];
+            } else {
+                $nut = array();
+                // loop through nutrients
+                foreach ($resp['report']['food']['nutrients'] as $nutrient) {
+                    // loop through nutrient´s units of measure
+                    foreach($nutrient['measures'] as $measure) {
+                        // if label matches unit of measure from recipe
+                        if ($measure['label'] == $food['measure']) {
+                            // store nutrient information for this food
+                            $nut[] = [  'nutrient_id'    => $nutrient['nutrient_id']
+                                , 'nutrient_group' => $nutrient['group']
+                                , 'nutrient_name'  => $nutrient['name']
+                                , 'nutrient_unit'  => $nutrient['unit']
+                                , 'measure_value'  => $measure['value']
+                                , 'measure_label'  => $measure['label']
+                            ];
+
+                            // search for nutrient_id
+                            $key = (int)array_search($nutrient['nutrient_id'], array_column($summary, 'nutrient_id'), true);
+                            // if not found on sumary
+                            if ($key == 0) {
+                                // add to summary
+                                $summary[] = ['nutrient_id' => $nutrient['nutrient_id']
+                                    , 'group'  => $nutrient['group']
+                                    , 'name' => $nutrient['name']
+                                    , 'unit' => $nutrient['unit']
+                                    , 'value' => $measure['value'] * $food['qty']
+                                ];
+                            }
+                            else {
+                                // sum qty
+                                $summary[$key]['value'] += $measure['value'];
+                            }
+                        }
+                    }
+                }
+            }
+
+            // adds food information to the summary
+            $response[] = [   'food_ndbno' => $food['ndbno']
+                , 'food_qty'  =>   $food['qty']
+                , 'food_measure' => $food['measure']
+                , 'food_nutrients' => $nut
+            ];
+        }
+
+        // removes dummy first position
+        array_shift($summary);
+
+        // response is an array of foods along with their nutritrients and nutrients summary
+        $response = array('foods' => $response, 'sumary' => $summary);
+
+        // returns response
+        return $response;
     }
 
     /*
