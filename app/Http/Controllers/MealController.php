@@ -167,7 +167,7 @@ class MealController extends Controller
      * Function: Retrieving a list of foods by its name
      * Address: /api/meal/food-name/butter
      * Method: GET
-     * Implemented by:
+     * Implemented by: @rossini
      */
     public function getFoodName($name){
         
@@ -176,13 +176,11 @@ class MealController extends Controller
         $url = "http://api.nal.usda.gov/ndb/search/?format=json&q=".$name."&sort=n&max=100&offset=0&api_key=".$api_key."";
         $array = $this->curlJsonUrlToArray($url);
         $response = array();
-
         foreach($array["list"]->item as $food){
-
-            $response[] = array("ndbno" => $food->ndbno,
-                                "name"=>$food->name
-                                );
-
+            $response[] = array(
+                "ndbno" => $food->ndbno,
+                "name"=>$food->name
+            );
         }
         return response()->json($response);
     }
