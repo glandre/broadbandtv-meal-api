@@ -120,22 +120,25 @@ class MealController extends Controller
         if(count($foods)) {
             if ($editingRecipe->save()) {
                 
+				$editingRecipe->recipeFoods()->delete();
                 $editingRecipe->recipeFoods()->saveMany($foods);
-                $message = (count($invalid) > 0) ? "Some data are not valid" : "Saved successfully";
+
+				//@rgbatistella
+				if(count($steps)) {
+					$editingRecipe->recipeSteps()->delete();
+					$editingRecipe->recipeSteps()->saveMany($steps);
+				}
+				
+                $message = (count($invalid) > 0)||(count($invalidSteps) > 0) ? "Some data are not valid" : "Saved successfully";
             }
+			
+
         }
         else {
             $message = "Invalid data";
             // bad request
         }
 
-		//@rgbatistella
-        if(count($steps)) {
-            if ($editingRecipe->save()) {                
-                $editingRecipe->recipeSteps()->saveMany($steps);
-                $message = (count($invalidSteps) > 0) ? "Some data is not valid" : "Saved successfully";
-            }
-        }
 		
         return array(
             'message' => $message,
