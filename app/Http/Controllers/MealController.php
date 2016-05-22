@@ -139,7 +139,7 @@ class MealController extends Controller
      * Function: Retrieving a food by its NDBNO
      * Address: /api/meal/food-ndbno/1234
      * Method: GET
-     * Implemented by: @eossinu
+     * Implemented by: @rossini
      */
     public function getFoodNdbno($ndbno){
         $api_key = $this->configuration->find("USDA-API-KEY")->value;
@@ -301,57 +301,48 @@ class MealController extends Controller
 			$nut = array();
 			if (!is_numeric($food['qty'])) {
 				$response[] = ['error','qty invalid'];
-			}
-			else {
+			} else {
 				
 				// calls usda api
 				$api_key = $this->configuration->find("USDA-API-KEY")->value;
-				$url = "http://api.nal.usda.gov/ndb/reports/?ndbno=".$food['ndbno']."&type=f&format=json&api_key=".$api_key; 
-				$ch = curl_init(); 
-				curl_setopt($ch, CURLOPT_URL, $url); 
-				curl_setopt($ch, CURLOPT_HEADER, false);  // don't return headers
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-				$res = curl_exec($ch); 
-				$err = curl_error($ch);
-				curl_close($ch);			
-					
-				$resp = array();
-				$resp = json_decode($res,true);
-	
-				if ($err) {
-					$response[] = ['error', $err];
+				$url = "http://api.nal.usda.gov/ndb/reports/?ndbno={$food['ndbno']}&type=f&format=json&api_key={$api_key}";
+                $resp = $this->curlJsonUrlToArray($url);
+
+				if ($resp == -1) {
+                    app()->abort(400, 'Requested URL is incorrect');
 				} else {			
 					$nut = array();					
 					// loop through nutrients
-					foreach ($resp['report']['food']['nutrients'] as $nutrient) {
+					foreach ($resp['report']->food->nutrients as $nutrient) {
 						// loop through nutrient´s units of measure
-						foreach($nutrient['measures'] as $measure) { 
+						foreach($nutrient->measures as $measure) {
 							// if label matches unit of measure from recipe
-							if ($measure['label'] == $food['measure']) { 
+							if ($measure->label == $food['measure']) {
 								// store nutrient information for this food             						
-								$nut[] = [  'nutrient_id'    => $nutrient['nutrient_id']
-										, 'nutrient_group' => $nutrient['group']
-										, 'nutrient_name'  => $nutrient['name']
-										, 'nutrient_unit'  => $nutrient['unit']
-										, 'measure_value'  => $measure['value'] 
-										, 'measure_label'  => $measure['label']
-										];
+								$nut[] = [
+                                    'nutrient_id'    => $nutrient->nutrient_id,
+                                    'nutrient_group' => $nutrient->group,
+                                    'nutrient_name'  => $nutrient->name,
+                                    'nutrient_unit'  => $nutrient->unit,
+                                    'measure_value'  => $measure->value,
+                                    'measure_label'  => $measure->label
+                                ];
 															
 								// search for nutrient_id
-								$key = (int)array_search($nutrient['nutrient_id'], array_column($summary, 'nutrient_id'), true);							
+								$key = (int)array_search($nutrient->nutrient_id, array_column($summary, 'nutrient_id'), true);
 								// if not found on sumary
 								if ($key == 0) {
 									// add to summary
-									$summary[] = ['nutrient_id' => $nutrient['nutrient_id']
-									, 'group'  => $nutrient['group']
-									, 'name' => $nutrient['name']
-									, 'unit' => $nutrient['unit']
-									, 'value' => $measure['value'] * $food['qty']
-										];
-								}
-								else {							
+									$summary[] = [
+                                        'nutrient_id' => $nutrient->nutrient_id,
+                                        'group'  => $nutrient->group,
+                                        'name' => $nutrient->name,
+                                        'unit' => $nutrient->unit,
+                                        'value' => $measure->value * $food['qty']
+                                    ];
+								} else {
 									// sum qty							
-									$summary[$key]['value'] += $measure['value'];
+									$summary[$key]['value'] += $measure->value;
 								}
 							}
 						}		
@@ -361,13 +352,13 @@ class MealController extends Controller
 			// adds food information to the summary
 			if (empty($nut)){
 				$response[] = ['error', 'No nutrients retrieved. Probably invalid measure!'];
-			}
-			else {
-				$response[] = [   'food_ndbno' => $food['ndbno']
-								, 'food_qty'  =>   $food['qty']
-								, 'food_measure' => $food['measure']
-								, 'food_nutrients' => $nut					
-							]; 
+			} else {
+				$response[] = [
+                    'food_ndbno' => $food['ndbno'],
+                    'food_qty'  =>   $food['qty'],
+                    'food_measure' => $food['measure'],
+                    'food_nutrients' => $nut
+                ];
 			}
 		}
 		
@@ -391,8 +382,13 @@ class MealController extends Controller
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $result = curl_exec($ch);
+        $err = curl_error($ch);
         curl_close($ch);
-        return (array)json_decode($result);
+
+        if($err)
+            return -1;
+        else
+            return (array)json_decode($result);
     }
 
     /*
