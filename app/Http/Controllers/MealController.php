@@ -169,43 +169,121 @@ class MealController extends Controller
 
     /*
      * Function: Retrieving a food by its NDBNO
-     * Address: /api/meal/food-ndbno/1234
+     * Address: /api/meal/food-ndbno/(foodid)
      * Method: GET
+	 * Param: Food ID(ndbno)
      * Implemented by: @rossini
+	 * Message format : Json
+	 * Function will retrieve a json with
+	 * food information using food ID.
+	 * However, if food ID is invalid
+	 * the function will retrieve a json
+	 * with error message : Invalid food ID.
+	 * Example of error
+		[
+			{
+			erro: "Invalid food name."
+			}
+		]
      */
     public function getFoodNdbno($ndbno){
-        $api_key = $this->configuration->find("USDA-API-KEY")->value;
-        $url = "http://api.nal.usda.gov/ndb/reports/?ndbno={$ndbno}&type=f&format=json&api_key={$api_key}";
-        $array = $this->curlJsonUrlToArray($url);
-        $response = array();
-        foreach($array["report"]->food->nutrients as $nutrient){
-            $response[] = array(
-                "name"=>$nutrient->name,
-                "unit"=>$nutrient->unit,
-                "value"=>$nutrient->value,
-                "measure"=>$nutrient->measures
-            );
-        }
+        
+		$usda_url = $this->configuration->find('USDA_REPORT_URL');
+		$format = $this->configuration->find('PREFERRED_FORMAT');
+		$api_key = $this->configuration->find("USDA-API-KEY")->value;
+		
+		
+        $url = $usda_url . "?ndbno=" . $ndbno . "&type=f&format=" . $format . "&api_key= ". $api_key"";
+        
+		$array = $this->curlJsonUrlToArray($url);
+        
+		$response = array();
+        
+		if(isset($array["errors"])){
+			
+			$response[] = array(
+				"erro" => "Invalid food ID."
+			);
+			
+		}else{
+		
+			foreach($array["report"]->food->nutrients as $nutrient){
+				$response[] = array(
+					"name"=>$nutrient->name,
+					"unit"=>$nutrient->unit,
+					"value"=>$nutrient->value,
+					"measure"=>$nutrient->measures
+				);
+			}
+			
+		}
         return response()->json($response);
     }
 
     /*
      * Function: Retrieving a list of foods by its name
-     * Address: /api/meal/food-name/butter
+     * Address: /api/meal/food-name/(foodname)
      * Method: GET
      * Implemented by: @rossini
+	 * Message format : Json
+	 *  Example of content
+	 * Message format : Json
+	 * Function will retrieve a json with
+	 * food information using food Name.
+	 * However, if food ID is invalid
+	 * the function will retrieve a json
+	 * with error message : Invalid food Name.
+	 [
+			{
+			ndbno: "09037",
+			name: "Avocados, raw, all commercial varieties"
+			},
+			{
+			ndbno: "09038",
+			name: "Avocados, raw, California"
+			},
+			{
+			ndbno: "09039",
+			name: "Avocados, raw, Florida"
+			},
+			{
+			ndbno: "04581",
+			name: "Oil, avocado"
+			}
+		]
+	 *  Example of error
+		[
+			{
+			erro: "Invalid food name."
+			}
+		]
      */
     public function getFoodName($name){
-        $api_key = $this->configuration->find("USDA-API-KEY")->value;
-        $url = "http://api.nal.usda.gov/ndb/search/?format=json&q={$name}&sort=n&max=100&offset=0&api_key={$api_key}";
-        $array = $this->curlJsonUrlToArray($url);
-        $response = array();
-        foreach($array["list"]->item as $food){
-            $response[] = array(
-                "ndbno" => $food->ndbno,
-                "name"=>$food->name
-            );
-        }
+        $usda_url = $this->configuration->find('USDA_SEARCH_URL');
+		$format = $this->configuration->find('PREFERRED_FORMAT');
+		$api_key = $this->configuration->find("USDA-API-KEY")->value;
+		
+        $url = $usda_url"?format=". $format ."&q=". $name ."&sort=n&max=100&offset=0&api_key=" .$api_key. "";
+        
+		$array = $this->curlJsonUrlToArray($url);
+        
+		$response = array();
+        
+		if(isset($array["errors"])){
+			
+			$response[] = array(
+				"erro" => "Invalid food name."
+			);
+			
+		}else{
+			
+			foreach($array["list"]->item as $food){
+				$response[] = array(
+					"ndbno" => $food->ndbno,
+					"name"=>$food->name
+				);
+			}
+		}
         return response()->json($response);
     }
 
