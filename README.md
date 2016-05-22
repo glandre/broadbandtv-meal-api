@@ -35,9 +35,10 @@ Any related feature you think would be cool or useful.
 Download the zip file and unzip it in your local machine.
 
 ###Windows
-- After unziping the content file, open command prompt
+After unziping the content file, open command prompt</b>
 
-- Access the API's source code directory
-'''
+Access the API's source code directory
+
+```
 cd broadbandtv-meal-api
-'''
+```
