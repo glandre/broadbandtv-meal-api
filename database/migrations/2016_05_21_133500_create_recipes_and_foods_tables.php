@@ -37,12 +37,13 @@ class CreateRecipesAndFoodsTables extends Migration
         });
         
         Schema::create('recipe_steps', function (Blueprint $table) {
-            $table->integer('number')->unsigned();
-            $table->primary('number');
-            $table->string('description');
+            $table->increments('id');
             $table->integer('recipe_id')->unsigned();
-            $table->foreign('recipe_id')->references('id')->on('recipes')->onDelete('cascade');
+            $table->integer('number')->unsigned();            
+            $table->string('description');
             $table->timestamps();
+            $table->foreign('recipe_id')->references('id')->on('recipes')->onDelete('cascade');
+			$table->unique(['recipe_id', 'number']);
         });
         
         Schema::create('configurations', function (Blueprint $table){
