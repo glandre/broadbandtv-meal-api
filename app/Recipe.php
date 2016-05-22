@@ -9,12 +9,15 @@ class Recipe extends Model {
     public function recipeFoods() {
         return $this->hasMany('App\RecipeFood');
     }
-
-	// @rgbatistella
+	
     public function recipeSteps() {
         return $this->hasMany('App\RecipeStep');
     }
 
+    public function recipeTags() {
+        return $this->hasMany('App\RecipeTag');
+    }
+	
     public function user() {
         return $this->belongsTo('App\User');
     }
