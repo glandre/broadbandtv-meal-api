@@ -18,7 +18,7 @@ class MealController extends Controller
     private $configuration;
     private $user;
 
-    public function __construct(Request $request, Recipe $recipe, RecipeFood $recipeFood, RecipeStep $recipeStep, Configuration $configuration, User $user)){
+    public function __construct(Request $request, Recipe $recipe, RecipeFood $recipeFood, RecipeStep $recipeStep, Configuration $configuration, User $user){
         //Dependecy Injection
         $this->request = $request;
         $this->recipe = $recipe;
