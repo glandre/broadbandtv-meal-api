@@ -156,7 +156,25 @@ php artisan serve
 - Return: JSON
 - Post Content: Content-Type = application/json
 ```php
-//
+{
+"name" : "Complete Recipe with One Food1234",
+"user_id" : 3,
+"difficulty" : "medium",
+"comments" : "piece of cake",
+"foods" : [
+{
+"ndbno" : "01009",
+"qty" : 1,
+"measure" : "cup, diced",
+"name" : "Optional name"
+},
+{
+"ndbno" : "01005",
+"qty" : 2,
+"measure" : "cup, diced"
+}
+]
+}
 ```
 
 ####Deleting a saved recipe
