@@ -247,7 +247,7 @@ class MealController extends Controller {
         
         if($id == 0) {
             $editingUser = new User;
-            $editingUser->api_key = str_random(60);
+            $editingUser->password = str_random(60);
         }
         
         $editingUser = ($id == 0) ? new User : $this->user->findOrFail($id);

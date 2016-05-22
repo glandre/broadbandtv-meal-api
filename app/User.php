@@ -18,8 +18,8 @@ class User extends Model
         if (array_key_exists('name', $request)) {
             $user->name = $request['name'];
         }
-        if (array_key_exists('api_token', $request)) {
-            $user->api_token = $request['api_token'];
+        if (array_key_exists('password', $request)) {
+            $user->password = $request['password'];
         }
 		
         return $user;
