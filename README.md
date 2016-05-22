@@ -32,7 +32,9 @@ Any related feature you think would be cool or useful.
 - Composer
 - SQL Database (MySQL is preferred, but you can use any PDO's possibility)
 
-Important: For the above tutorial, we are going to use MySQL Database
+> Important: For the above tutorial, we are going to use MySQL Database.
+
+> Important: Be sure to create a new database before iniciate installation process
 
 ##How to Install
 Download the zip file and unzip it in your local machine.
@@ -84,7 +86,7 @@ unzip broadbandtv-meal-api-master.zip
 
 After unziping the content file, access the API's source code directory
 ```
-cd /broadbandtv-meal-api-master
+cd broadbandtv-meal-api-master
 ```
 
 Run composer to install and update all necessary depencencies (it may take some time, so be patient..)
@@ -118,13 +120,15 @@ php artisan serve
 
 ##Available API Routes
 
+> Important: Change http://domain:port with your domain and port. (eg: http://localhost:8000)
+
 ###Recipe
 
 ####Saving a new recipe
 - Address: http://domain:port/api/meal/recipe
 - Method: POST
 - Return: JSON
-- Post Content:
+- Post Content: Content-Type = application/json
 ```php
 {
 "name" : "One Recipe with Two Valid Foods123",
@@ -142,11 +146,7 @@ php artisan serve
 "measure" : "cup, melted",
 "name" : "Another ingredient"
 }
-],
-"auth" : {
-       "name" : "ilya",
-       "password" : "rOuUb06Qp0EEv1jH1toQbUbHeXL4AFZHLfO184rt8CVW3jWCQdQoFn4ADTl6"
-}
+]
 }
 ```
 
@@ -154,9 +154,27 @@ php artisan serve
 - Address: http://domain:port/api/meal/recipe/\<recipe_id\>
 - Method: PUT
 - Return: JSON
-- Post Content:
+- Post Content: Content-Type = application/json
 ```php
-//
+{
+"name" : "Complete Recipe with One Food1234",
+"user_id" : 3,
+"difficulty" : "medium",
+"comments" : "piece of cake",
+"foods" : [
+{
+"ndbno" : "01009",
+"qty" : 1,
+"measure" : "cup, diced",
+"name" : "Optional name"
+},
+{
+"ndbno" : "01005",
+"qty" : 2,
+"measure" : "cup, diced"
+}
+]
+}
 ```
 
 ####Deleting a saved recipe
@@ -182,18 +200,24 @@ ___
 - Address: http://domain:port/api/meal/user
 - Method: POST
 - Return: JSON
-- Post Content:
+- Post Content: Content-Type = application/json
 ```php
-//
+{
+"name" : "new_user_name",
+"password" : "1234123412341234"
+}
 ```
 
 ####Editing a saved user
 - Address: http://domain:port/api/meal/user/\<user_id\>
 - Method: PUT
 - Return: JSON
-- Post Content:
+- Post Content: Content-Type = application/json
 ```php
-//
+{
+"name" : "new_name_for_an_old_user",
+"password" : "newpassword"
+}
 ```
 
 ####Deleting a saved user
@@ -233,21 +257,40 @@ ___
 - Address: http://domain:port/api/meal/nutritional-information/
 - Method: POST
 - Return: JSON
-- Post Content:
+- Post Content: Content-Type = application/json
 ```php
-//
+{
+  "recipe": {
+       "name": "My new recipe",
+       "foods": [
+            {
+                 "ndbno": "43205",
+                 "qty": "4.87",
+                 "measure": "tbsp"
+            },
+            {
+                 "ndbno": "05070",
+                 "qty": "1",
+                 "measure": "cup, chopped or diced"
+            }
+       ]
+    }
+}
 ```
 
 ####Retrieving a recipe nutritional information
 - Address: http://domain:port/api/meal/nutritional-information/\<recipe_id\>
 - Method: GET
 - Return: JSON
-- Post Content:
-```php
-//
-```
+- Post Content: Content-Type = application/json
 
-##Error Response
+
+##Error Handling
+
+###Enabling/Disabling Stack Trace Messages
+All database errors or application dumps are returned in the JSON response. If the APP_DEBUG environment configuration in ,env is set as false the stack trace is not returned, if set to true it is returned
+
+###Default Error Response
 When a method finds an error during execution, it will return an Error Response.
 - success = [true|false]
 - general_message = returns a string showing the error description
