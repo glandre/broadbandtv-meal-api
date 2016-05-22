@@ -63,7 +63,7 @@ class MealController extends Controller
      * Implemented by: @glandre
      */
     public function getRecipe($id=0){
-        $response = ($id != 0) ? $this->recipe->with('recipe_steps, recipe_tags')->find($id) : $this->recipe->with('recipe_steps, recipe_tags')->all();
+        $response = ($id != 0) ? $this->recipe->with('recipeSteps', 'recipeFoods')->find($id) : $this->recipe->with('recipeSteps', 'recipeFoods')->get();
         return response()->json($response);
     }
 
