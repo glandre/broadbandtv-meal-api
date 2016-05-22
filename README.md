@@ -84,7 +84,7 @@ unzip broadbandtv-meal-api-master.zip
 
 After unziping the content file, access the API's source code directory
 ```
-cd /broadbandtv-meal-api-master
+cd broadbandtv-meal-api-master
 ```
 
 Run composer to install and update all necessary depencencies (it may take some time, so be patient..)
