@@ -41,8 +41,7 @@ class MealController extends Controller
                     break;
                 }
                 
-                $response = $request;
-//                $response = $this->updateRecipe($request);
+                $response = $this->updateRecipe($request);
                 break;
             default:
 //                $this->app->abort(501, 'Only JSON is supported');
@@ -54,12 +53,23 @@ class MealController extends Controller
 
     /*
      * Function: Retrieving a saved recipe
-     * Address: /api/meal/recipe/1234
+     * Address: /api/meal/recipe/<recipe_id>
      * Method: GET
      * Implemented by: @glandre
      */
     public function getRecipe($id){
         $response = $this->recipe->find($id);
+        return response()->json($response);
+    }
+
+    /*
+     * Function: Retrieving all recipes from a user
+     * Address: /api/meal/recipe/<user_id>
+     * Method: GET
+     * Implemented by: @glandre
+     */
+    public function getUserRecipe($user_id){
+        $response = $this->recipe->where('user_id', $user_id)->get();
         return response()->json($response);
     }
 
@@ -399,12 +409,11 @@ class MealController extends Controller
      * Implemented by: @glandre
      */
     private function bindRecipeData($request, $id=0) {
-        if($id != 0) {
-            // throws an exception if the register is not found
-            $editingRecipe = $this->recipe->findOrFail($id);
-        }
+        
+        $editingRecipe = ($id == 0) ? new Recipe : $this->recipe->findOrFail($id);
+        
         // bind recipe from request
-        $editingRecipe = $this->recipe->bind($request);
+        $this->recipe->bind($request, $editingRecipe);
         $foodsToSave = array();
         $invalid = array();
         
