@@ -18,9 +18,11 @@ class Recipe extends Model {
         return strlen($this->name) >= 1 && intval($this->user_id) > 0;
     }
 
-    public static function bind($request) {
-        $recipe = new Recipe;
-
+    public static function bind($request, Recipe $recipe = null) {
+        if(is_null($recipe)) {
+            $recipe = new Recipe;
+        }
+        
         if (array_key_exists('name', $request)) {
             $recipe->name = $request['name'];
         }
