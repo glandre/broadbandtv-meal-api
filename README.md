@@ -118,67 +118,75 @@ php artisan serve
 
 ##Usage
 
-###Save a new recipe
+###Recipe
+
+####Save a new recipe
 - Address: http://domain:port/api/recipe
 - Method: POST
 - Return: JSON
 
-###Retrieving a saved recipe
+####Retrieving a saved recipe
 - Address: http://domain:port/api/meal/recipe/<recipe_id>
 - Method: GET
 - Return: JSON
 
-###Retrieving all recipes from a user
+####Retrieving all recipes from a user
 - Address: http://domain:port/api/meal/user-recipes/<user_id>
 - Method: GET
 - Return: JSON
 
-###Editing a saved recipe
+####Editing a saved recipe
 - Address: http://domain:port/api/meal/recipe/<recipe_id>
 - Method: PUT
 - Return: JSON
 
-###Editing a saved user
+####Deleting a saved recipe
+- Address: http://domain:port/api/meal/recipe/<recipe_id>
+- Method: DELETE
+- Return: JSON
+
+###User
+
+####Editing a saved user
 - Address: http://domain:port/api/meal/user/<user_id>
 - Method: PUT
 - Return: JSON
 
-###Deleting a saved recipe
-- Address: http://domain:port/api/meal/recipe/<recipe_id>
-- Method: DELETE
-- Return: JSON
-
-###Deleting a saved user
+####Deleting a saved user
 - Address: http://domain:port/api/meal/recipe/<user_id>
 - Method: DELETE
 - Return: JSON
 
-###Retrieving a saved user
+####Retrieving a saved user
 - Address: http://domain:port/api/meal/recipe/<user_id>
 - Method: GET
 - Return: JSON
 
-###Saving a new user
+####Saving a new user
 - Address: http://domain:port/api/meal/user
 - Method: POST
 - Return: JSON
 
-###Retrieving a food name and its measures by its NDBNO
+###Food
+
+####Retrieving a food name and its measures by its NDBNO
 - Address: http://domain:port/api/meal/food-ndbno/<food_id>
 - Method: GET
 - Return: JSON
 
-###Retrieving a list of foods by its name
+####Retrieving a list of foods by its name
 - Address: http://domain:port/api/meal/food-name/<food_name>
 - Method: GET
 - Return: JSON
 
-###Retrieving nutritional information of a list of foods
+###Calculating Nutritional Information
+
+####Retrieving nutritional information of a list of foods
 - Address: http://domain:port/api/meal/nutritional-information/
 - Method: POST
 - Return: JSON
 
-###Retrieving a recipe nutritional information
+####Retrieving a recipe nutritional information
 - Address: http://domain:port/api/meal/nutritional-information/<recipe_id>
 - Method: GET
 - Return: JSON
