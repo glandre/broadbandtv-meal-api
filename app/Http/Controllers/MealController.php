@@ -27,9 +27,29 @@ class MealController extends Controller
      * Implemented by:
      */
     public function postRecipe(){
+        $request = $this->request->all();
+        
+        list($newRecipe, $foods, $invalid) = $this->bindRecipeData($request);
+        
+        $message = "Could not save recipe";
+        if(count($foods)) {
+            if ($newRecipe->save()) {
+                $newRecipe->recipeFoods()->saveMany($foods);
+                $message = (count($invalid) > 0) ? "Some data are not valid" : "Saved successfully";
+            }
+        }
+        else {
+            $message = "Invalid data";
+            // bad request
+        }
+
         $response = array(
-            'Implement this to save a new recipe',
+            'message' => $message,
+            'saved_recipe' => $newRecipe,
+            'saved_foods' => $foods,
+            'invalid_foods' => $invalid
         );
+        
         return response()->json($response);
     }
 
@@ -194,4 +214,32 @@ class MealController extends Controller
         curl_close($ch);
         return (array)json_decode($result);
     }
+
+    /*
+     * Implemented by: @glandre
+     */
+    private function bindRecipeData($request) {
+        // bind recipe from request
+        $newRecipe = Recipe::bind($request);
+        $foodsToSave = array();
+        $invalid = array();
+        
+        if($newRecipe->validate()) {
+            // bind each food by request
+            foreach($request['foods'] as $recipeFood) {    
+                
+                $recipeFood = RecipeFood::bind($recipeFood);
+                if($recipeFood->validate()) {
+                    $foodsToSave[] = $recipeFood;
+                }
+                else {
+                    $invalid[] = $recipeFood;
+                }
+            }
+        }
+        
+        return array($newRecipe, $foodsToSave, $invalid);
+        
+    }
+
 }
