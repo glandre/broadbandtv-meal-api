@@ -128,7 +128,7 @@ php artisan serve
 - Address: http://domain:port/api/meal/recipe
 - Method: POST
 - Return: JSON
-- Post Content:
+- Post Content: Content-Type = application/json
 ```php
 {
 "name" : "One Recipe with Two Valid Foods123",
@@ -154,7 +154,7 @@ php artisan serve
 - Address: http://domain:port/api/meal/recipe/\<recipe_id\>
 - Method: PUT
 - Return: JSON
-- Post Content:
+- Post Content: Content-Type = application/json
 ```php
 //
 ```
@@ -182,7 +182,7 @@ ___
 - Address: http://domain:port/api/meal/user
 - Method: POST
 - Return: JSON
-- Post Content:
+- Post Content: Content-Type = application/json
 ```php
 //
 ```
@@ -191,7 +191,7 @@ ___
 - Address: http://domain:port/api/meal/user/\<user_id\>
 - Method: PUT
 - Return: JSON
-- Post Content:
+- Post Content: Content-Type = application/json
 ```php
 //
 ```
@@ -233,7 +233,7 @@ ___
 - Address: http://domain:port/api/meal/nutritional-information/
 - Method: POST
 - Return: JSON
-- Post Content:
+- Post Content: Content-Type = application/json
 ```php
 //
 ```
@@ -242,7 +242,7 @@ ___
 - Address: http://domain:port/api/meal/nutritional-information/\<recipe_id\>
 - Method: GET
 - Return: JSON
-- Post Content:
+- Post Content: Content-Type = application/json
 ```php
 //
 ```
