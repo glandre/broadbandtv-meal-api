@@ -82,7 +82,7 @@ class MealController extends Controller {
         }
 
 //        return response()->json($response, $status);
-		responseMsgJson($success, $response, $errors, $status);
+		return $this->responseMsgJson($success, $response, $errors, $status);
     }
 
     /**
@@ -140,7 +140,7 @@ class MealController extends Controller {
                 $errors[] = array('error' => 501, 'message' => 'Only JSON is supported');					
         }
 //        return response()->json($response, $status);
-		responseMsgJson($success, $response, $errors, $status);
+		return $this->responseMsgJson($success, $response, $errors, $status);
     }
 
     /**
@@ -189,7 +189,7 @@ class MealController extends Controller {
 			
 
 //        return response()->json($response);
-		responseMsgJson($success, $response, $errors, $status);
+		$this->responseMsgJson($success, $response, $errors, $status);
     }
 
     /**
@@ -737,8 +737,10 @@ class MealController extends Controller {
      * @return array with the following fields: recipe, valid_foods, invalid_foods, valid_steps, invalid_steps
      */
     private function bindRecipeData($request, $id = 0) {
-
-        $editingRecipe = ($id == 0) ? new Recipe : $this->recipe->findOrFail($id);
+		if ($id == null) {
+			$id = 0;
+		}
+        $editingRecipe = (intval($id) == 0) ? new Recipe : $this->recipe->findOrFail($id);
 
         if (array_key_exists('recipe', $request)) {
             $request = $request['recipe'];

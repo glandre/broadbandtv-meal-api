@@ -57,19 +57,30 @@ class Handler extends ExceptionHandler
             $status = $e->getStatusCode();
         }
 
-			
-		$json = [
-            'success' => false,
-         //   'general_message' => $e->getTrace(),
-		    'general_message' => 'API exception',
-            'error' => [
-                'code' => $e->getCode(),
-                'message' => $e->getMessage(),
-                'exception'=> get_class($e),
-				'stackTrace'=>$e->getTrace(),
-				
-            ],
-        ];
+//		if (env('APP_DEBUG', false)) {
+			$json = [
+				'success' => false,
+				'general_message' => 'API exception',
+				'error' => [
+					'code' => $e->getCode(),
+					'message' => $e->getMessage(),
+					'exception'=> get_class($e),
+					'stackTrace'=>$e->getTrace(),
+					
+				],
+			];
+//		else {
+//			$json = [
+//				'success' => false,
+//				'general_message' => 'API exception',
+//				'error' => [
+//					'code' => $e->getCode(),
+//					'message' => $e->getMessage(),
+//					'exception'=> get_class($e),
+//					
+//				],
+//			];
+//		}
 		 	 
         return response()->json($json, $status);		 
 		 
