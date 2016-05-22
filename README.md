@@ -27,7 +27,7 @@ Any related feature you think would be cool or useful.
 - RESTfull JSON API
 - Version 1.0.0.0
 
-##Requistes
+##Requirements
 - PHP5.6 or higher
 - Composer
 - SQL Database (MySQL is preferred, but you can use any PDO possibility)
@@ -75,11 +75,16 @@ php artisan serve
 ```
 
 ###Linux
-After unziping the content file, open command prompt</b>
+Execute the following steps using a terminal</b>
 
-Access the API's source code directory
+Go to the directory you have downloaded API's zip file and unzip it
 ```
-cd broadbandtv-meal-api
+unzip broadbandtv-meal-api-master.zip
+```
+
+After unziping the content file, access the API's source code directory
+```
+cd /broadbandtv-meal-api-master
 ```
 
 Run composer to install and update all necessary depencencies (it may take some time, so be patient..)
@@ -89,7 +94,7 @@ composer update
 
 Now, that you have everything you need to run this API, you must configure it.
 ```
-copy .env.example .env
+cp .env.example .env
 ```
 
 You also have to generate a valid app key. The following command will do this to you:
@@ -106,7 +111,7 @@ php artisan migrate --seed
 
 Excellent! It's all done. Now you can use your Web Server Application to run this API.
 
-You don't have any Web Server in your machine? No problem. Make sure you are inside **/broadbandtv-meal-api** directory and, using your command prompt, run the following command:
+You don't have any Web Server in your machine? No problem. Make sure you are inside **/broadbandtv-meal-api** directory and run the following command:
 ```
 php artisan serve
 ```
